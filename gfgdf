@@ -1,5 +1,9 @@
 package com.company;
 import java.util.*;
+
+interface User{
+    public void reward();
+}
 class Merchant{
     private String name;
     private String address;
@@ -9,6 +13,10 @@ class Merchant{
 
     public int getSlots() {
         return slots;
+    }
+
+    public void setSots(int slots){
+        this.slots=slots;
     }
 
     public void setItem_number(int item_number) {
@@ -54,23 +62,35 @@ class Merchant{
     }
 
     public void addItem(){
-        Scanner scan = new Scanner(System.in);
-        System.out.println("Enter item details");
-        System.out.println("item name: ");
-        String itemName = scan.next();
-        System.out.println("item price: ");
-        float itemPrice = scan.nextFloat();
-        System.out.println("item quantity: ");
-        int itemQuantity = scan.nextInt();
-        System.out.println("item category: ");
-        String itemCategory = scan.next();
+        if(this.getSlots()>=this.merchant_items.size()) {
+            Scanner scan = new Scanner(System.in);
+            System.out.println("Enter item details");
+            System.out.println("item name: ");
+            String itemName = scan.next();
+            System.out.println("item price: ");
+            float itemPrice = scan.nextFloat();
+            System.out.println("item quantity: ");
+            int itemQuantity = scan.nextInt();
+            System.out.println("item category: ");
+            String itemCategory = scan.next();
 
-        Item i1 = new Item();
-        i1.setName(itemName);i1.setCategory(itemCategory);i1.setPrice(itemPrice);i1.setQuantity(itemQuantity);
+            Item i1 = new Item();
+            i1.setName(itemName);
+            i1.setCategory(itemCategory);
+            i1.setPrice(itemPrice);
+            i1.setQuantity(itemQuantity);
 
-        this.merchant_items.add(i1);
-        System.out.print(i1.getUid()+" ");System.out.print(i1.getName()+" ");System.out.print(i1.getPrice()+" ");System.out.print(i1.getQuantity()+" ");System.out.print("None ");System.out.println(i1.getCategory()+" ");
-
+            this.merchant_items.add(i1);
+            System.out.print(i1.getUid() + " ");
+            System.out.print(i1.getName() + " ");
+            System.out.print(i1.getPrice() + " ");
+            System.out.print(i1.getQuantity() + " ");
+            System.out.print("None ");
+            System.out.println(i1.getCategory() + " ");
+        }
+        else{
+            System.out.println("Slots are full  no more items can be added");
+        }
     }
 
 
@@ -100,8 +120,13 @@ class Merchant{
         }
     }
 
-    public void SearchbyCategory(){
+    public void addReward(){
+        if(this.getContribution()>=100){
+            this.setContribution(this.getContribution()-100);
+            this.setSots(this.getSlots()+1);
+        }
 
+        System.out.println("Slots rewarded = "+(this.getSlots()-10));
 
 
     }
@@ -137,7 +162,19 @@ class Customer{
     private String address;
     private float balance=100;
     private float reward=0;
-    private int total_orders=0;
+    private int purchases=0;
+     ArrayList<Item> cart= new ArrayList<Item>();
+    ArrayList<Item> recent_history= new ArrayList<Item>();
+
+
+    public int getPurchases(){
+        return purchases;
+    }
+
+    public void setPurchases(int z){
+        purchases=z;
+    }
+
 
     public float getBalance() {
         return balance;
@@ -153,6 +190,7 @@ class Customer{
 
     public void setReward(float reward) {
         this.reward = reward;
+
     }
 
     public String getName() {
@@ -171,13 +209,16 @@ class Customer{
         this.address = address;
     }
 
-    public int getTotal_orders() {
-        return total_orders;
+
+    public void addReward(){
+        if(this.getPurchases()>=5){
+            this.setPurchases(this.getPurchases()-5);
+            this.setReward(this.getReward()+10);
+        }
     }
 
-    public void setTotal_orders(int total_orders) {
-        this.total_orders = total_orders;
-    }
+
+
 
 }
 
@@ -189,6 +230,15 @@ class Item{
     private int quantity;
     private String category;
     private String offer="";
+    private String merchant_name;
+
+    public String getMerchant_name() {
+        return merchant_name;
+    }
+
+    public void setMerchant_name(String merchant_name) {
+        this.merchant_name = merchant_name;
+    }
 
     public int getUid() {
         return uid;
@@ -251,6 +301,178 @@ public class Main {
     public static float company_balance;
 
 
+    public static void addtoCart(int a,int code,int q){
+        int w=-1;
+        int i,j=0;
+        for(i=1;i<=5;i++){
+            for(j=0;j<merchant_map.get(i).merchant_items.size();j++){
+                if(merchant_map.get(i).merchant_items.get(j).getUid()==code) {
+//                            merchant_map.get(i).printItem(merchant_map.get(i).merchant_items.get(j));
+//                            System.out.println();
+                    w++;
+                    break;
+                }
+            }
+            if(w==0){
+                break;
+            }
+        }
+        Item i1 = new Item();
+        i1.setUid(merchant_map.get(i).merchant_items.get(j).getUid());
+        i1.setPrice(merchant_map.get(i).merchant_items.get(j).getPrice());
+        i1.setQuantity(q);
+        i1.setName(merchant_map.get(i).merchant_items.get(j).getName());
+        i1.setOffer(merchant_map.get(i).merchant_items.get(j).getOffer());
+        i1.setCategory(merchant_map.get(i).merchant_items.get(j).getCategory());
+        customer_map.get(a).cart.add(i1);
+    }
+
+    public static void addtoHistory(int a,int code,int q){
+        int w=-1;
+        int i,j=0;
+        for(i=1;i<=5;i++){
+            for(j=0;j<merchant_map.get(i).merchant_items.size();j++){
+                if(merchant_map.get(i).merchant_items.get(j).getUid()==code) {
+//                            merchant_map.get(i).printItem(merchant_map.get(i).merchant_items.get(j));
+//                            System.out.println();
+                    w++;
+                    break;
+                }
+            }
+            if(w==0){
+                break;
+            }
+        }
+        Item i1 = new Item();
+        //i1.setUid(merchant_map.get(i).merchant_items.get(j).getUid());
+        i1.setPrice(merchant_map.get(i).merchant_items.get(j).getPrice());
+        i1.setQuantity(q);
+        i1.setName(merchant_map.get(i).merchant_items.get(j).getName());
+        //i1.setOffer(merchant_map.get(i).merchant_items.get(j).getOffer());
+        //i1.setCategory(merchant_map.get(i).merchant_items.get(j).getCategory());
+        i1.setMerchant_name(merchant_map.get(i).getName());
+        if(customer_map.get(a).recent_history.size()>=10){
+            customer_map.get(a).recent_history.remove(0);
+        }
+        customer_map.get(a).recent_history.add(i1);
+    }
+
+
+    public static void buyItem(int a,int code,int q){
+        int w=-1;
+        int i,j=0;
+        for(i=1;i<=5;i++){
+            for(j=0;j<merchant_map.get(i).merchant_items.size();j++){
+                if(merchant_map.get(i).merchant_items.get(j).getUid()==code) {
+//                            merchant_map.get(i).printItem(merchant_map.get(i).merchant_items.get(j));
+//                            System.out.println();
+                    w++;
+                    break;
+                }
+            }
+            if(w==0){
+                break;
+            }
+        }
+
+        if(merchant_map.get(i).merchant_items.get(j).getOffer().equals("buy one get one")){
+            if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=2*q && merchant_map.get(i).merchant_items.get(j).getPrice()*q<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q<0){
+                    customer_map.get(a).setReward(customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
+                    customer_map.get(a).setBalance(0);
+                }
+                else{
+                    customer_map.get(a).setBalance(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
+                }
+                merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-2*q);
+                customer_map.get(a).setPurchases(customer_map.get(a).getPurchases()+1);
+                company_balance+=0.01*merchant_map.get(i).merchant_items.get(j).getPrice()*q;
+                merchant_map.get(i).setContribution((float) (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.005));
+
+                System.out.println(merchant_map.get(i).getContribution());
+                System.out.println(company_balance);
+                System.out.println(customer_map.get(a).getBalance());
+                System.out.println(customer_map.get(a).getReward());
+            }
+            else{
+                if(merchant_map.get(i).merchant_items.get(j).getQuantity()<2*q) {
+                    System.out.println("Error: Item out of stock , Please try again  ");
+                    customer_menu(a);
+                }
+                else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                    System.out.println("Error:You don't have enough money in your account , Please try again");
+                    customer_menu(a);
+                }
+            }
+        }
+
+        else if(merchant_map.get(i).merchant_items.get(j).getOffer().equals("25% off")){
+            if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=q && merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75<0){
+                    customer_map.get(a).setReward((float) (customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75));
+                    customer_map.get(a).setBalance(0);
+                }
+                else{
+                    customer_map.get(a).setBalance((float) (customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75));
+                }
+                merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-q);
+                customer_map.get(a).setPurchases(customer_map.get(a).getPurchases()+1);
+                company_balance+=0.01*merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75;
+                merchant_map.get(i).setContribution((float) (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.005));
+            }
+            else{
+                if(merchant_map.get(i).merchant_items.get(j).getQuantity()<q) {
+                    System.out.println("Error: Item quantity is not available right now , Please try again  ");
+                    customer_menu(a);
+                }
+                else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                    System.out.println("Error:You don't have enough money in your account , Please try again");
+                    customer_menu(a);
+                }
+            }
+        }
+
+        else{
+            if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=q && merchant_map.get(i).merchant_items.get(j).getPrice()*q<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q<0){
+                    customer_map.get(a).setReward(customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
+                    customer_map.get(a).setBalance(0);
+                }
+                else{
+                    customer_map.get(a).setBalance(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
+                }
+                merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-q);
+                customer_map.get(a).setPurchases(customer_map.get(a).getPurchases()+1);
+                company_balance+=0.01*merchant_map.get(i).merchant_items.get(j).getPrice()*q;
+                merchant_map.get(i).setContribution((float) (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.005));
+            }
+            else{
+                if(merchant_map.get(i).merchant_items.get(j).getQuantity()<q) {
+                    System.out.println("Error: Item quantity is not available right now , Please try again  ");
+                    customer_menu(a);
+                }
+                else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
+                    System.out.println("Error:You don't have enough money in your account , Please try again");
+                    customer_menu(a);
+                }
+            }
+        }
+        System.out.println("Item successfully bought");
+        customer_map.get(a).setPurchases(customer_map.get(a).getPurchases()+1);
+        System.out.println(merchant_map.get(i).getContribution());
+        System.out.println(company_balance);
+        System.out.println(customer_map.get(a).getBalance());
+        System.out.println(customer_map.get(a).getReward());
+
+        addtoHistory(a,code,q);
+        customer_menu(a);
+
+
+
+
+    }
+
+
     public static void main_menu(){
 
         Scanner scan = new Scanner(System.in);
@@ -283,6 +505,8 @@ public class Main {
 
         }
         else if(x==3){
+
+
 
         }
         else if(x==4){
@@ -360,10 +584,14 @@ public class Main {
         else if(y==4){
 
             merchant_map.get(a).addOffer();
+            System.out.println();
+            merchant_menu(a);
 
 
         }
         else if(y==5){
+
+            merchant_map.get(a).addReward();
 
         }
 
@@ -422,108 +650,26 @@ public class Main {
             if (method==1){// BUY
                 //CHECK whether Merchant has enough quantity
                 // CHECK WHETHER CUSTOMER HAS ENOUGH MONEY
+                    customer_map.get(a).addReward();
 
-                int w=-1;
-                int i,j=0;
-                for(i=1;i<=5;i++){
-                    for(j=0;j<merchant_map.get(i).merchant_items.size();j++){
-                        if(merchant_map.get(i).merchant_items.get(j).getUid()==code) {
-//                            merchant_map.get(i).printItem(merchant_map.get(i).merchant_items.get(j));
-//                            System.out.println();
-                            w++;
-                            break;
-                        }
-                        }
-                    if(w==0){
-                        break;
-                    }
-                }
-
-                if(merchant_map.get(i).merchant_items.get(j).getOffer().equals("buy one get one")){
-                    if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=2*q && merchant_map.get(i).merchant_items.get(j).getPrice()*q<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                        if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q<0){
-                            customer_map.get(a).setReward(customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
-                            customer_map.get(a).setBalance(0);
-                        }
-                        else{
-                            customer_map.get(a).setBalance(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
-                        }
-                        merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-2*q);
-                        customer_map.get(a).setTotal_orders(customer_map.get(a).getTotal_orders()+1);
-                        company_balance+=0.01*merchant_map.get(i).merchant_items.get(j).getPrice()*q;
-                        merchant_map.get(i).setContribution((float) (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.5));
-                    }
-                    else{
-                        if(merchant_map.get(i).merchant_items.get(j).getQuantity()<2*q) {
-                            System.out.println("Error: Item out of stock , Please try again  ");
-                            customer_menu(a);
-                        }
-                        else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                            System.out.println("Error:You don't have enough money in your account , Please try again");
-                            customer_menu(a);
-                        }
-                    }
-                }
-
-                else if(merchant_map.get(i).merchant_items.get(j).getOffer().equals("25% off")){
-                    if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=q && merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                        if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75<0){
-                            customer_map.get(a).setReward((float) (customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75));
-                            customer_map.get(a).setBalance(0);
-                        }
-                        else{
-                            customer_map.get(a).setBalance((float) (customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75));
-                        }
-                        merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-q);
-                        customer_map.get(a).setTotal_orders(customer_map.get(a).getTotal_orders()+1);
-                        company_balance+=0.015*merchant_map.get(i).merchant_items.get(j).getPrice()*q;
-                    }
-                    else{
-                        if(merchant_map.get(i).merchant_items.get(j).getQuantity()<q) {
-                            System.out.println("Error: Item quantity is not available right now , Please try again  ");
-                            customer_menu(a);
-                        }
-                        else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q*0.75>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                            System.out.println("Error:You don't have enough money in your account , Please try again");
-                            customer_menu(a);
-                        }
-                    }
-                }
-
-                else{
-                    if( merchant_map.get(i).merchant_items.get(j).getQuantity()>=q && merchant_map.get(i).merchant_items.get(j).getPrice()*q<=customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                        if(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q<0){
-                            customer_map.get(a).setReward(customer_map.get(a).getReward()+customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
-                            customer_map.get(a).setBalance(0);
-                        }
-                        else{
-                            customer_map.get(a).setBalance(customer_map.get(a).getBalance()-merchant_map.get(i).merchant_items.get(j).getPrice()*q);
-                        }
-                        merchant_map.get(i).merchant_items.get(j).setQuantity(merchant_map.get(i).merchant_items.get(j).getQuantity()-q);
-                        customer_map.get(a).setTotal_orders(customer_map.get(a).getTotal_orders()+1);
-                        company_balance+=0.015*merchant_map.get(i).merchant_items.get(j).getPrice()*q;
-                    }
-                    else{
-                        if(merchant_map.get(i).merchant_items.get(j).getQuantity()<q) {
-                            System.out.println("Error: Item quantity is not available right now , Please try again  ");
-                            customer_menu(a);
-                        }
-                        else if (merchant_map.get(i).merchant_items.get(j).getPrice()*q>customer_map.get(a).getBalance()+customer_map.get(a).getReward()){
-                            System.out.println("Error:You don't have enough money in your account , Please try again");
-                            customer_menu(a);
-                        }
-                    }
-                }
-
-
-
+                    buyItem(a,code,q);
             }
 
             else if(method==2){
 
+                addtoCart(a,code,q);
+                for(int i=0;i<customer_map.get(a).cart.size();i++){
+                    System.out.println(customer_map.get(a).cart.get(i));
+                }
+
+                customer_menu(a);
+
+
+
+
             }
 
-            else if(method==3){
+            else if(method==3){ //EXIT
                 customer_menu(a);
             }
 
@@ -535,7 +681,8 @@ public class Main {
 
         }
         else if(y==3){
-
+            System.out.println("Reward won = "+customer_map.get(a).getReward());
+            customer_menu(a);
 
         }
         else if(y==4) {
