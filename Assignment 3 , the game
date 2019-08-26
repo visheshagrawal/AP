@@ -10,13 +10,24 @@ class Graphs {
     Graphs(int v) {
         V = v;
         adj = new ArrayList<ArrayList<Integer>>(V);
-        for (int i = 0; i < V; i++)
+        for (int i =1; i <=V; i++)
             adj.add(new ArrayList<Integer>());
     }
 
     void addEdge(int u, int v) {
         adj.get(u).add(v);
-        adj.get(v).add(u);
+        //adj.get(v).add(u);
+    }
+
+    void display(){
+        for(int i=0;i<adj.size();i++){
+            System.out.print( i+" ");
+            for(int j=0;j<adj.get(i).size();j++){
+                System.out.print(adj.get(i).get(j)+" ");
+            }
+            System.out.println();
+        }
+
     }
 
 }
@@ -188,7 +199,6 @@ class Healer extends Hero{
 
 
 class Monster{
-
     private float HP;
     private int level;
 
@@ -232,34 +242,99 @@ class Fiends extends Monster{
 
 }
 class Game{
+
     Graphs g;
-    ArrayList monsterList;
+    ArrayList<Integer> pos_list;
+    HashMap<Integer,Integer> pos_map;
 
     public Game(){
-        this.g= new Graphs(8);
+        this.g= new Graphs(26);
+        this.pos_map = new HashMap<Integer, Integer>();
+
         createGraph();
     }
 
 
+
+
     void createGraph(){
-        this.g = new Graphs(8);
-        this.g.addEdge(0,1);
-        this.g.addEdge(0,2);
-        this.g.addEdge(0,4);
-        this.g.addEdge(1,2);
-        this.g.addEdge(1,4);
-        this.g.addEdge(2,3);
-        this.g.addEdge(3,4);
-        this.g.addEdge(4,5);
-        this.g.addEdge(3,6);
-        this.g.addEdge(5,6);
-        this.g.addEdge(5,7);
-        this.g.addEdge(6,7);
+        this.g = new Graphs(26);
+        for(int i=1;i<=25;i++){
+            if(i!=1 && i!=5 && i!=21 && i!=25){
+                if(i==3 || i==2 || i==4){
+                    this.g.addEdge(i,i+5);
+                    this.g.addEdge(i,25+i-5);
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);}
+            else if(i==22 || i==23 || i==24){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i-20);
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);
+                }
+            else if(i==10 || i==15 || i==20){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i-4);
+                    this.g.addEdge(i,i+5);
+                }
+            else if(i==6 || i==11 || i==16){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i+4);
+                    this.g.addEdge(i,i+5);
+                }
+
+            else{
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+5);
+                }
+
+
+            }
+            else {
+                if (i == 1) {
+                    this.g.addEdge(1, 2);
+                    this.g.addEdge(1, 6);
+                } else if (i == 5) {
+                    this.g.addEdge(5, 4);
+                    this.g.addEdge(5, 10);
+                } else if (i == 21) {
+                    this.g.addEdge(21, 16);
+                    this.g.addEdge(21, 22);
+                } else if (i == 25) {
+                    this.g.addEdge(25, 24);
+                    this.g.addEdge(25, 20);
+                }
+            }
+//            else{
+//                this.g.addEdge(i,i+1);
+//            }
+        }
+
+//        this.g = new Graphs(8);
+//        this.g.addEdge(0,1);
+//        this.g.addEdge(0,2);
+//        this.g.addEdge(0,4);
+//        this.g.addEdge(1,2);
+//        this.g.addEdge(1,4);
+//        this.g.addEdge(2,3);
+//        this.g.addEdge(3,4);
+//        this.g.addEdge(4,5);
+//        this.g.addEdge(3,6);
+//        this.g.addEdge(5,6);
+//        this.g.addEdge(5,7);
+//        this.g.addEdge(6,7);
     }
 
     void printnextPositions(int x){
+        pos_list=new ArrayList<>();
         for(int i=0;i<this.g.adj.get(x).size();i++){
             System.out.println(i+1+") Go to location "+this.g.adj.get(x).get(i));
+            pos_map.put(i,this.g.adj.get(x).get(i));
+            pos_list.add(this.g.adj.get(x).get(i));
         }
     }
 
@@ -360,10 +435,18 @@ public class Assignment3{
                     System.out.println("User Found. Logging in......");
                     System.out.println("Welcome "+ exuname);
                     Game game = new Game();
-                    System.out.println("You are at the starting location(0), choose your path");
-                    game.printnextPositions(0);
+                    game.g.display();
+                    System.out.println("You are at the starting location(13), choose your path");
+                    game.printnextPositions(13);
+                    System.out.println("Enter -1 to exit");
                     int pos = scan.nextInt();
-                    
+                    if(pos==-1){
+                        openingMenu();
+                    }
+                    else{
+                            pos = pos - 1;
+                            game.printnextPositions(game.pos_list.get(pos)); /// CALL
+                    }
 
                 }
                 else{
