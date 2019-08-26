@@ -1,0 +1,385 @@
+package com.company;
+
+import java.util.*;
+import java.lang.*;
+
+class Graphs {
+    ArrayList<ArrayList<Integer>> adj;
+    int V;
+
+    Graphs(int v) {
+        V = v;
+        adj = new ArrayList<ArrayList<Integer>>(V);
+        for (int i = 0; i < V; i++)
+            adj.add(new ArrayList<Integer>());
+    }
+
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+        adj.get(v).add(u);
+    }
+
+}
+
+interface Heros{
+
+}
+
+class Player{
+    private final String username;
+    Hero h;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Player(String uname, Hero h){
+        this.username=uname;
+        this.h=h;
+    }
+
+
+}
+
+class Hero{
+
+    float HP=100;
+    int XP=0;
+    int level=1;
+
+    public float getAttack() {
+        return attack;
+    }
+
+    public void setAttack(float attack) {
+        this.attack = attack;
+    }
+
+    public float getDefence() {
+        return defence;
+    }
+
+    public void setDefence(float defence) {
+        this.defence = defence;
+    }
+
+    public float getSpecial_attack() {
+        return special_attack;
+    }
+
+    public void setSpecial_attack(float special_attack) {
+        this.special_attack = special_attack;
+    }
+
+    public int getMove() {
+        return move;
+    }
+
+    public void setMove(int move) {
+        this.move = move;
+    }
+
+    private float attack;
+    private float defence;
+    private float special_attack;
+    private int move;
+    public float getHP() {
+        return HP;
+    }
+
+    public void setHP(float HP) {
+        this.HP = HP;
+    }
+
+    public int getXP() {
+        return XP;
+    }
+
+    public void setXP(int XP) {
+        this.XP = XP;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void changeLevelandIncreasehealth(){
+        if (this.getXP()>=60){
+            this.setLevel(4);
+            this.setHP(250);
+        }
+        else if (this.getXP()>=40){
+            this.setLevel(3);
+            this.setHP(200);
+        }
+        else if (this.getXP()>=20){
+            this.setLevel(2);
+            this.setHP(150);
+        }
+        else{
+            this.setHP(100);
+        }
+
+    }
+
+
+
+
+}
+
+
+class Warrior extends Hero{
+    public Warrior(){
+        this.setAttack(10);
+        this.setDefence(3);
+        //this.setSpecial_attack();
+        this.setMove(0);
+    }
+
+
+
+
+
+}
+
+class Magi extends Hero{
+    public Magi(){
+        this.setAttack(5);
+        this.setDefence(5);
+        //this.setSpecial_attack();
+        this.setMove(0);
+    }
+}
+
+class Thief extends Hero{
+    public Thief(){
+        this.setAttack(6);
+        this.setDefence(4);
+        //this.setSpecial_attack();
+        this.setMove(0);
+    }
+}
+
+class Healer extends Hero{
+    public Healer(){
+        this.setAttack(4);
+        this.setDefence(8);
+        //this.setSpecial_attack();
+        this.setMove(0);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+class Monster{
+
+    private float HP;
+    private int level;
+
+
+    public float getHP() {
+        return HP;
+    }
+
+    public void setHP(float HP) {
+        this.HP = HP;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+
+
+
+}
+
+
+
+class Goblin extends Monster{
+
+}
+
+class Lionfang extends Monster{
+
+}
+
+class Zombies extends Monster{
+
+}
+
+class Fiends extends Monster{
+
+}
+class Game{
+    Graphs g;
+    ArrayList monsterList;
+
+    public Game(){
+        this.g= new Graphs(8);
+        createGraph();
+    }
+
+
+    void createGraph(){
+        this.g = new Graphs(8);
+        this.g.addEdge(0,1);
+        this.g.addEdge(0,2);
+        this.g.addEdge(0,4);
+        this.g.addEdge(1,2);
+        this.g.addEdge(1,4);
+        this.g.addEdge(2,3);
+        this.g.addEdge(3,4);
+        this.g.addEdge(4,5);
+        this.g.addEdge(3,6);
+        this.g.addEdge(5,6);
+        this.g.addEdge(5,7);
+        this.g.addEdge(6,7);
+    }
+
+    void printnextPositions(int x){
+        for(int i=0;i<this.g.adj.get(x).size();i++){
+            System.out.println(i+1+") Go to location "+this.g.adj.get(x).get(i));
+        }
+    }
+
+//     void  randomMonsterAllotment(){
+//         int randomInteger;
+//        for(int i=0;i<8;i++) {
+//            randomInteger = Random.nextInt(4);
+//            randomInteger++;
+//
+//
+//        }
+//    }
+
+
+
+        }
+
+public class Assignment3{
+
+    public static HashMap<String,Player> player_map= new HashMap<String,Player>();
+    public static HashMap<String,Monster> monster_map;
+    public static ArrayList<Player> playerlist;
+    //hero_map= new HashMap<String,Hero>();
+
+    static void openingMenu(){
+        Scanner scan = new Scanner(System.in);
+        playerlist = new ArrayList<Player>();
+        //player_map = new HashMap<String,Player>();
+        System.out.println("Welcome to ArchLegend");
+        System.out.println("Choose option");
+        System.out.println("1) New User");
+        System.out.println("2) Existing User");
+        System.out.println("3) Exit");
+        int choice = scan.nextInt();
+        switch(choice){
+            case 1:
+                System.out.println("Enter new username");
+                String uname = scan.next();
+                System.out.println("Choose a hero");
+                System.out.println("1) Warrior");
+                System.out.println("2) Magi");
+                System.out.println("3) Thief");
+                System.out.println("4) Healer");
+                int heroChoice = scan.nextInt();
+                Hero h;
+                Player p;
+                switch(heroChoice){
+                    case 1:h= new Warrior();
+                        p=new Player(uname,h);
+                        p.setType("Warrior");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 2:h = new Magi();
+                        //h.setType("Magi");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Magi");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 3:h= new Thief();
+                        //h.setType("Thief");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Thief");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 4:h = new Healer();
+                        //h.setType("Healer");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Healer");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case -1: openingMenu();
+                    default:h= new Warrior();
+                        //h.setType("none");
+                        p=new Player(uname,h);
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                }
+                System.out.println("User creation is done! New user is: "+uname+" The user type is :"+p.getType()+" Login to play the game. Exiting");
+                openingMenu();
+                break;
+            case 2:
+                System.out.println(player_map.keySet());
+                System.out.println("Enter username");
+                String exuname = scan.next();
+                if(player_map.containsKey(exuname)){
+                    System.out.println("User Found. Logging in......");
+                    System.out.println("Welcome "+ exuname);
+                    Game game = new Game();
+                    System.out.println("You are at the starting location(0), choose your path");
+                    game.printnextPositions(0);
+                    int pos = scan.nextInt();
+                    
+
+                }
+                else{
+                    System.out.println("Sorry the username does not exist , please try again");
+                    openingMenu();
+                }
+                break;
+            case 3:System.exit(0);
+            break;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        openingMenu();
+
+
+    }
+}
