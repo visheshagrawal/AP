@@ -4,6 +4,7 @@ import java.util.*;
 import java.lang.*;
 
 class Graphs {
+    Random rand = new Random();
     ArrayList<ArrayList<Integer>> adj;
     int V;
 
@@ -32,9 +33,6 @@ class Graphs {
 
 }
 
-interface Heros{
-
-}
 
 class Player{
     private final String username;
@@ -62,6 +60,8 @@ class Hero{
     float HP=100;
     int XP=0;
     int level=1;
+
+
 
     public float getAttack() {
         return attack;
@@ -201,6 +201,7 @@ class Healer extends Hero{
 class Monster{
     private float HP;
     private int level;
+    public String type;
 
 
     public float getHP() {
@@ -228,31 +229,67 @@ class Monster{
 
 class Goblin extends Monster{
 
+    public Goblin(){
+        this.setHP(100);
+        this.setLevel(1);
+        this.type="Goblin";
+    }
+
+
 }
 
 class Lionfang extends Monster{
-
+        public Lionfang(){
+            this.setHP(250);
+            this.setLevel(4);
+            this.type="Lionfang";
+        }
 }
 
 class Zombies extends Monster{
+
+    public Zombies(){
+        this.setHP(150);
+        this.setLevel(2);
+        this.type="Zombies";
+    }
 
 }
 
 class Fiends extends Monster{
 
+    public Fiends(){
+        this.setHP(200);
+        this.setLevel(3);
+        this.type="Fiends";
+    }
+
 }
 class Game{
-
+    Random rand = new Random();
     Graphs g;
     ArrayList<Integer> pos_list;
     HashMap<Integer,Integer> pos_map;
+    ArrayList<Monster> monster_list;
 
     public Game(){
         this.g= new Graphs(26);
         this.pos_map = new HashMap<Integer, Integer>();
-
+        this.monster_list = new ArrayList<Monster>();
         createGraph();
     }
+
+
+
+    void printlist(){
+        for(int i=0;i<monster_list.size();i++){
+            System.out.println(monster_list.get(i).type);
+        }
+    }
+//
+//    void fight(int x){
+//        System.out.println("");
+//    }
 
 
 
@@ -309,24 +346,9 @@ class Game{
                     this.g.addEdge(25, 20);
                 }
             }
-//            else{
-//                this.g.addEdge(i,i+1);
-//            }
         }
 
-//        this.g = new Graphs(8);
-//        this.g.addEdge(0,1);
-//        this.g.addEdge(0,2);
-//        this.g.addEdge(0,4);
-//        this.g.addEdge(1,2);
-//        this.g.addEdge(1,4);
-//        this.g.addEdge(2,3);
-//        this.g.addEdge(3,4);
-//        this.g.addEdge(4,5);
-//        this.g.addEdge(3,6);
-//        this.g.addEdge(5,6);
-//        this.g.addEdge(5,7);
-//        this.g.addEdge(6,7);
+
     }
 
     void printnextPositions(int x){
@@ -338,17 +360,33 @@ class Game{
         }
     }
 
-//     void  randomMonsterAllotment(){
-//         int randomInteger;
-//        for(int i=0;i<8;i++) {
-//            randomInteger = Random.nextInt(4);
-//            randomInteger++;
-//
-//
-//        }
-//    }
+    void addRandomMonsters() {
+        int rand_1;
+        Monster m;
+        for (int i = 0; i < 25; i++) {
+            rand_1 = rand.nextInt(3);
+            rand_1++;
+            if (i != 0 && i!=4 && i!=20 && i!=24){
+                if (rand_1 == 1) {
+                    m = new Goblin();
+                    monster_list.add(m);
+                } else if (rand_1 == 2) {
+                    m = new Zombies();
+                    monster_list.add(m);
+
+                } else if (rand_1 == 3) {
+                    m = new Fiends();
+                    monster_list.add(m);
+                }
+            }
+            if(i==0 || i==4 || i==20 || i==24){
+                m=new Lionfang();
+                monster_list.add(m);
+            }
 
 
+        }
+    }
 
         }
 
@@ -435,7 +473,9 @@ public class Assignment3{
                     System.out.println("User Found. Logging in......");
                     System.out.println("Welcome "+ exuname);
                     Game game = new Game();
-                    game.g.display();
+                    game.addRandomMonsters();
+                    //game.printlist();
+                    //game.g.display();
                     System.out.println("You are at the starting location(13), choose your path");
                     game.printnextPositions(13);
                     System.out.println("Enter -1 to exit");
@@ -443,11 +483,32 @@ public class Assignment3{
                     if(pos==-1){
                         openingMenu();
                     }
-                    else{
+                    else {
+                        while(game.pos_list.get(pos)!=1 && game.pos_list.get(pos)!=5 && game.pos_list.get(pos)!=21 && game.pos_list.get(pos)!=25) {
+//                            if(game.pos_list.get(pos) == 1)
+//                            {
+//                                System.out.println("in");
+//                                break;
+//                            }
                             pos = pos - 1;
+                            System.out.println("You are at the location(" + game.pos_list.get(pos) + "), choose your path");
                             game.printnextPositions(game.pos_list.get(pos)); /// CALL
-                    }
+                            System.out.println("Enter -1 to exit");
+                            pos = scan.nextInt();
+                            //game.pos_list.get(pos);
+                           //System.out.println(pos-1);
+                            //System.out.println(game.pos_list.get(pos-1));
+                            if(game.pos_list.get(pos-1) == 1 || game.pos_list.get(pos-1) == 5 || game.pos_list.get(pos-1) ==21  || game.pos_list.get(pos-1) == 25)
+                            {
+                                System.out.println("in");
+                                break;
+                            }
 
+
+
+                        }
+
+                    }
                 }
                 else{
                     System.out.println("Sorry the username does not exist , please try again");
