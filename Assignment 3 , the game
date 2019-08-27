@@ -61,6 +61,7 @@ class Hero {
     int level = 1;
     float defence_temp=0;
     boolean special_attack;
+    int HP_acctolevel=100;
 //    ArrayList<Monster> m_list;
 //
 //
@@ -154,22 +155,32 @@ class Hero {
         System.out.println("defense");
     }
 
-    public void specialAttack(){
+    public void specialAttack(Monster mq){
 
     }
 
 
 
     public void enemyAttack(Monster mq){
+        System.out.println("Monster attack");
         double randomgaussian = (1/Math.pow(Math.PI*2, 0.5))*(Math.exp(-0.5*Math.pow(new Random().nextInt(3), 2)));
-
-        this.setHP((float) (this.getHP()-0.25*randomgaussian*mq.getHP()));
+        if(0.25*randomgaussian*mq.getHP()>this.defence_temp) {
+            this.setHP((float) (this.getHP() - 0.25 * randomgaussian * mq.getHP()) + this.defence_temp);
+        }
+        else{
+            System.out.println("Hero successfully defended against the attack");
+        }
+        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+        this.printHP(mq);
         //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
         this.defence_temp=0;
-        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
-        System.out.println(this.getHP());
+        //System.out.println(this.getHP());
         this.fight(mq,this.getPos());
 
+    }
+
+    public void printHP(Monster mq){
+        System.out.println("Your HP is "+this.getHP()+"/"+this.HP_acctolevel+" Monster's HP is "+mq.getHP()+"/"+mq.HP_acctolevel);
     }
 
 
@@ -184,14 +195,17 @@ class Hero {
             int choose = scan.nextInt();
             switch (choose) {
                 case 1:
+                    System.out.println("You have chosen to attack");
                     this.attack(mq);
                     break;
 
                 case 2:
+                    System.out.println("You have chosen to defend");
                     this.defence(mq);
                     break;
                 case 3:
-                    this.specialAttack();
+                    System.out.println("Special power activated \n Performing special attack.");
+                    this.specialAttack(mq);
                     break;
             }
         } else {
@@ -200,10 +214,12 @@ class Hero {
             int choose = scan.nextInt();
             switch (choose) {
                 case 1:
+                    System.out.println("You have chosen to attack");
                     this.attack(mq);
                     break;
 
                 case 2:
+                    System.out.println("You have chosen to defend");
                     this.defence(mq);
                     break;
             }
@@ -219,6 +235,177 @@ class Warrior extends Hero{
     public Warrior(){
         this.setAttack(10);
         this.setDefence(3);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        this.special_attack=false;
+        this.count=3;
+    }
+
+    @Override
+    public void attack(Monster mq){
+        if(special_attack && this.count>0){
+            mq.setHP(mq.getHP()-this.getAttack()-5);
+            System.out.println("The attack by hero is");
+            System.out.println(this.getAttack()+5);
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+        else{
+            mq.setHP(mq.getHP()-this.getAttack());
+            System.out.println("The attack by hero is");
+            System.out.println(this.getAttack());
+        }
+
+        //System.out.println(mq.getLevel());
+        System.out.println(mq.getHP());
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+    }
+
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            this.defence_temp=this.getDefence()+5;
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+        else{
+            this.defence_temp=this.getDefence();
+        }
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+
+
+
+
+
+
+}
+
+class Magi extends Hero{
+    int count;
+    public Magi(){
+        this.setAttack(5);
+        this.setDefence(5);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        this.special_attack=false;
+        this.count=3;
+    }
+
+    @Override
+    public void attack(Monster mq){
+        if(special_attack && this.count>0){
+            mq.setHP((float)(mq.getHP()*0.95));
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+            mq.setHP(mq.getHP()-this.getAttack());
+            System.out.println("The attack by hero is");
+            System.out.println(this.getAttack());
+
+        //System.out.println(mq.getLevel());
+        System.out.println(this.getAttack());
+        System.out.println(mq.getHP());
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+    }
+
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            this.defence_temp=this.getDefence()+5;
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+        else{
+            this.defence_temp=this.getDefence();
+        }
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+}
+
+class Thief extends Hero{
+    //int count;
+    public Thief(){
+        this.setAttack(6);
+        this.setDefence(4);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        //this.special_attack=false;
+        //this.count=3;
+    }
+
+    @Override
+    public void attack(Monster mq){
+            mq.setHP(mq.getHP()-this.getAttack());
+        System.out.println("The attack by hero is");
+        System.out.println(this.getAttack());
+        System.out.println(mq.getHP());
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+    }
+
+    @Override
+    public void defence(Monster mq){
+            this.defence_temp=this.getDefence();
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+    @Override
+    public void specialAttack(Monster mq){
+        //special_attack=true;
+        float a =(float)(mq.getHP()*0.3);
+        //System.out.println("Special Power Activated \n Performing Special Attack");
+        mq.setHP(mq.getHP()-a);
+        System.out.println("You have stolen "+a+" health of the monster");
+        printHP(mq);
+
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+}
+
+class Healer extends Hero{
+    int count;
+    public Healer(){
+        this.setAttack(4);
+        this.setDefence(8);
         //this.setSpecial_attack();
         this.setMove(0);
         this.defence_temp=0;
@@ -264,126 +451,11 @@ class Warrior extends Hero{
         this.enemyAttack(mq);
 
     }
-
-//    //@Override
-//    public void enemyAttack(Monster mq){
-//         this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
-//        this.fight(mq,this.getPos());
-//    }
-
     public void specialAttack(Monster mq){
         special_attack=true;
         //this.setMove(this.getMove()+1);
         this.setMove(0);
         this.enemyAttack(mq);
-    }
-
-
-
-
-
-
-
-}
-
-class Magi extends Hero{
-    public Magi(){
-        this.setAttack(5);
-        this.setDefence(5);
-        //this.setSpecial_attack();
-        this.setMove(0);
-    }
-
-    @Override
-    public void attack(Monster mq){
-        mq.setHP(mq.getHP()-getAttack());
-        System.out.println(mq.getLevel());
-        System.out.println(mq.getHP());
-    }
-
-    @Override
-    public void defence(Monster mq){
-        System.out.println("Hello");
-    }
-
-    //@Override
-    public void enemyAttack(Monster mq){
-        this.setHP(this.getHP()-3);
-    }
-}
-
-class Thief extends Hero{
-    //int count;
-    public Thief(){
-        this.setAttack(6);
-        this.setDefence(4);
-        //this.setSpecial_attack();
-        this.setMove(0);
-        this.defence_temp=0;
-        //this.special_attack=false;
-        //this.count=3;
-    }
-
-    @Override
-    public void attack(Monster mq){
-            mq.setHP(mq.getHP()-this.getAttack());
-        System.out.println("The attack by hero is");
-        System.out.println(this.getAttack());
-        System.out.println(mq.getHP());
-        this.setMove(this.getMove()+1);
-        this.enemyAttack(mq);
-    }
-
-    @Override
-    public void defence(Monster mq){
-            this.defence_temp=this.getDefence();
-        this.setMove(this.getMove()+1);
-        this.enemyAttack(mq);
-
-    }
-
-//    //@Override
-//    public void enemyAttack(Monster mq){
-//         this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
-//        this.fight(mq,this.getPos());
-//    }
-
-    public void specialAttack(Monster mq){
-        //special_attack=true;
-        float a =(float)(mq.getHP()*0.3);
-        System.out.println("Special Power Activated \n Performing Special Attack");
-        mq.setHP(a);
-        System.out.println("You have stolen "+);
-        //this.setMove(this.getMove()+1);
-        this.setMove(0);
-        this.enemyAttack(mq);
-    }
-
-}
-
-class Healer extends Hero{
-    public Healer(){
-        this.setAttack(4);
-        this.setDefence(8);
-        //this.setSpecial_attack();
-        this.setMove(0);
-    }
-
-    @Override
-    public void attack(Monster mq){
-        mq.setHP(mq.getHP()-10);
-        System.out.println(mq.getLevel());
-        System.out.println(mq.getHP());
-    }
-
-    @Override
-    public void defence(Monster mq){
-        System.out.println("Hello");
-    }
-
-    //@Override
-    public void enemyAttack(Monster mq){
-        this.setHP(this.getHP()-3);
     }
 }
 
@@ -399,6 +471,7 @@ class Healer extends Hero{
 class Monster{
     private float HP;
     private int level;
+    int HP_acctolevel;
     public String type;
 
 
@@ -431,6 +504,8 @@ class Goblin extends Monster{
         this.setHP(100);
         this.setLevel(1);
         this.type="Goblin";
+        this.HP_acctolevel=100;
+
     }
 
 
@@ -441,6 +516,7 @@ class Lionfang extends Monster{
             this.setHP(250);
             this.setLevel(4);
             this.type="Lionfang";
+            this.HP_acctolevel=250;
         }
 }
 
@@ -450,6 +526,7 @@ class Zombies extends Monster{
         this.setHP(150);
         this.setLevel(2);
         this.type="Zombies";
+        this.HP_acctolevel=150;
     }
 
 }
@@ -460,6 +537,7 @@ class Fiends extends Monster{
         this.setHP(200);
         this.setLevel(3);
         this.type="Fiends";
+        this.HP_acctolevel=200;
     }
 
 }
