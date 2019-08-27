@@ -55,13 +55,18 @@ class Player{
 
 }
 
-class Hero{
-
-    float HP=100;
-    int XP=0;
-    int level=1;
-
-
+class Hero {
+    float HP = 100;
+    int XP = 0;
+    int level = 1;
+    float defence_temp=0;
+    boolean special_attack;
+//    ArrayList<Monster> m_list;
+//
+//
+//    public Hero(ArrayList<Monster> m_list){
+//        this.m_list=m_list;
+//    }
 
     public float getAttack() {
         return attack;
@@ -79,14 +84,6 @@ class Hero{
         this.defence = defence;
     }
 
-    public float getSpecial_attack() {
-        return special_attack;
-    }
-
-    public void setSpecial_attack(float special_attack) {
-        this.special_attack = special_attack;
-    }
-
     public int getMove() {
         return move;
     }
@@ -97,8 +94,18 @@ class Hero{
 
     private float attack;
     private float defence;
-    private float special_attack;
     private int move;
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+    private int pos;
+
     public float getHP() {
         return HP;
     }
@@ -123,38 +130,155 @@ class Hero{
         this.level = level;
     }
 
-    public void changeLevelandIncreasehealth(){
-        if (this.getXP()>=60){
+    public void changeLevelandIncreasehealth() {
+        if (this.getXP() >= 60) {
             this.setLevel(4);
             this.setHP(250);
-        }
-        else if (this.getXP()>=40){
+        } else if (this.getXP() >= 40) {
             this.setLevel(3);
             this.setHP(200);
-        }
-        else if (this.getXP()>=20){
+        } else if (this.getXP() >= 20) {
             this.setLevel(2);
             this.setHP(150);
-        }
-        else{
+        } else {
             this.setHP(100);
         }
 
     }
 
+    public void attack(Monster mq) {
+        System.out.println("attack");
+    }
+
+    public void defence(Monster mq) {
+        System.out.println("defense");
+    }
+
+    public void specialAttack(){
+
+    }
 
 
 
+    public void enemyAttack(Monster mq){
+        double randomgaussian = (1/Math.pow(Math.PI*2, 0.5))*(Math.exp(-0.5*Math.pow(new Random().nextInt(3), 2)));
+
+        this.setHP((float) (this.getHP()-0.25*randomgaussian*mq.getHP()));
+        //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+        this.defence_temp=0;
+        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+        System.out.println(this.getHP());
+        this.fight(mq,this.getPos());
+
+    }
+
+
+    public void fight(Monster mq , int pos) {
+        this.setPos(pos);
+        Scanner scan = new Scanner(System.in);
+        System.out.println("choose");
+        if (this.getMove() >= 3) {
+            System.out.println("1) Attack");
+            System.out.println("2) Defense");
+            System.out.println("3) Special Attack");
+            int choose = scan.nextInt();
+            switch (choose) {
+                case 1:
+                    this.attack(mq);
+                    break;
+
+                case 2:
+                    this.defence(mq);
+                    break;
+                case 3:
+                    this.specialAttack();
+                    break;
+            }
+        } else {
+            System.out.println("1) Attack");
+            System.out.println("2) Defense");
+            int choose = scan.nextInt();
+            switch (choose) {
+                case 1:
+                    this.attack(mq);
+                    break;
+
+                case 2:
+                    this.defence(mq);
+                    break;
+            }
+
+        }
+
+
+    }
 }
 
-
 class Warrior extends Hero{
+    int count;
     public Warrior(){
         this.setAttack(10);
         this.setDefence(3);
         //this.setSpecial_attack();
         this.setMove(0);
+        this.defence_temp=0;
+        this.special_attack=false;
+        this.count=3;
     }
+
+    @Override
+    public void attack(Monster mq){
+        if(special_attack && this.count>0){
+            mq.setHP(mq.getHP()-this.getAttack()-5);
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+        else{
+            mq.setHP(mq.getHP()-this.getAttack());
+        }
+
+        //System.out.println(mq.getLevel());
+        System.out.println("The attack by hero is");
+        System.out.println(this.getAttack());
+        System.out.println(mq.getHP());
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+    }
+
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            this.defence_temp=this.getDefence()+5;
+            this.count--;
+        }
+        else if(this.count==0){
+            this.special_attack=false;
+        }
+        else{
+            this.defence_temp=this.getDefence();
+        }
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+
+//    //@Override
+//    public void enemyAttack(Monster mq){
+//         this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+//        this.fight(mq,this.getPos());
+//    }
+
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+
 
 
 
@@ -169,6 +293,23 @@ class Magi extends Hero{
         //this.setSpecial_attack();
         this.setMove(0);
     }
+
+    @Override
+    public void attack(Monster mq){
+        mq.setHP(mq.getHP()-getAttack());
+        System.out.println(mq.getLevel());
+        System.out.println(mq.getHP());
+    }
+
+    @Override
+    public void defence(Monster mq){
+        System.out.println("Hello");
+    }
+
+    //@Override
+    public void enemyAttack(Monster mq){
+        this.setHP(this.getHP()-3);
+    }
 }
 
 class Thief extends Hero{
@@ -178,6 +319,22 @@ class Thief extends Hero{
         //this.setSpecial_attack();
         this.setMove(0);
     }
+    @Override
+    public void attack(Monster mq){
+        mq.setHP(mq.getHP()-10);
+        System.out.println(mq.getLevel());
+        System.out.println(mq.getHP());
+    }
+
+    @Override
+    public void defence(Monster mq){
+        System.out.println("Hello");
+    }
+
+    //@Override
+    public void enemyAttack(Monster mq){
+        this.setHP(this.getHP()-3);
+    }
 }
 
 class Healer extends Hero{
@@ -186,6 +343,23 @@ class Healer extends Hero{
         this.setDefence(8);
         //this.setSpecial_attack();
         this.setMove(0);
+    }
+
+    @Override
+    public void attack(Monster mq){
+        mq.setHP(mq.getHP()-10);
+        System.out.println(mq.getLevel());
+        System.out.println(mq.getHP());
+    }
+
+    @Override
+    public void defence(Monster mq){
+        System.out.println("Hello");
+    }
+
+    //@Override
+    public void enemyAttack(Monster mq){
+        this.setHP(this.getHP()-3);
     }
 }
 
@@ -283,7 +457,7 @@ class Game{
 
     void printlist(){
         for(int i=0;i<monster_list.size();i++){
-            System.out.println(monster_list.get(i).type);
+            System.out.print(monster_list.get(i).type+" ");
         }
     }
 //
@@ -474,7 +648,8 @@ public class Assignment3{
                     System.out.println("Welcome "+ exuname);
                     Game game = new Game();
                     game.addRandomMonsters();
-                    //game.printlist();
+                    //game.monster_list.set(12,);
+                    game.printlist();
                     //game.g.display();
                     System.out.println("You are at the starting location(13), choose your path");
                     game.printnextPositions(13);
@@ -484,12 +659,19 @@ public class Assignment3{
                         openingMenu();
                     }
                     else {
-                        while(game.pos_list.get(pos)!=1 && game.pos_list.get(pos)!=5 && game.pos_list.get(pos)!=21 && game.pos_list.get(pos)!=25) {
+                        while(game.pos_list.get(pos-1)!=1 && game.pos_list.get(pos-1)!=5 && game.pos_list.get(pos-1)!=21 && game.pos_list.get(pos-1)!=25) {
 //                            if(game.pos_list.get(pos) == 1)
 //                            {
 //                                System.out.println("in");
 //                                break;
 //                            }
+                            h=player_map.get(exuname).h;
+                            System.out.println(h);
+                            System.out.println(game.pos_list);
+                            game.pos_list.get(pos);
+                            //h.fight(game.monster_list.get(pos),pos);
+                            //h.fight(new Goblin(),pos-1);
+                            h.fight(game.monster_list.get(game.pos_list.get(pos-1)-1),game.pos_list.get(pos-1));
                             pos = pos - 1;
                             System.out.println("You are at the location(" + game.pos_list.get(pos) + "), choose your path");
                             game.printnextPositions(game.pos_list.get(pos)); /// CALL
