@@ -345,10 +345,6 @@ class Warrior extends Hero{
                 }
             }
             else {
-                if (mq.type == "Lionfang") {
-                    System.out.println("Lionfang is dead. Congratulations you win");
-                    return;
-                } else {
                     mq.setHP(mq.getHP() - this.getAttack() - 5);
                     System.out.println("The attack by hero is");
                     System.out.println(this.getAttack() + 5);
@@ -356,17 +352,23 @@ class Warrior extends Hero{
                     System.out.println(mq.getHP());
                     this.setMove(this.getMove() + 1);
                     this.enemyAttack(mq);
-                }
+
             }
         }
         else{
             if(mq.getHP()-this.getAttack()<=0){
-                System.out.println("Monster dead");
-                this.setXP(this.getXP()+mq.getLevel()*20);
-                this.changeLevelandIncreasehealth();
-                mq.setHP(mq.HP_acctolevel);
-                //this.g1.printnextPositions(this.getPos()+1);
-            }
+                if (mq.type == "Lionfang") {
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                }
+                else{
+                    System.out.println("Monster dead");
+                    this.setXP(this.getXP() + mq.getLevel() * 20);
+                    this.changeLevelandIncreasehealth();
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos()+1);
+                }
+                }
             else {
                 this.special_attack = false;
                 mq.setHP(mq.getHP() - this.getAttack());
