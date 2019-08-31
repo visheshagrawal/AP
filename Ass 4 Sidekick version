@@ -1,0 +1,1221 @@
+package com.company;
+
+import java.util.*;
+import java.lang.*;
+
+class Graphs {
+    Random rand = new Random();
+    ArrayList<ArrayList<Integer>> adj;
+    int V;
+
+    Graphs(int v) {
+        V = v;
+        adj = new ArrayList<ArrayList<Integer>>(V);
+        for (int i =1; i <=V; i++)
+            adj.add(new ArrayList<Integer>());
+    }
+
+    void addEdge(int u, int v) {
+        adj.get(u).add(v);
+        //adj.get(v).add(u);
+    }
+
+    void display(){
+        for(int i=0;i<adj.size();i++){
+            System.out.print( i+" ");
+            for(int j=0;j<adj.get(i).size();j++){
+                System.out.print(adj.get(i).get(j)+" ");
+            }
+            System.out.println();
+        }
+
+    }
+
+}
+
+
+class Player{
+    private final String username;
+    Hero h;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Player(String uname, Hero h){
+        this.username=uname;
+        this.h=h;
+    }
+
+
+}
+
+class Hero {
+    //static int number=0;
+    int check_for_giving_sidekick=0;
+    Game g1;
+    float HP = 100;
+    int XP = 0;
+    int level = 1;
+    float defence_temp=0;
+    boolean special_attack;
+    int HP_acctolevel=100;
+    Sidekick sidekick; // The hero is assigned this as a sidekick we can change the sidekick
+    //After everytime we see the list.
+    ArrayList<Sidekick> sidekicks_list= new ArrayList<Sidekick>();
+//    ArrayList<Monster> m_list;
+//
+//
+//    public Hero(ArrayList<Monster> m_list){
+//        this.m_list=m_list;
+//    }
+
+    public float getAttack() {
+        return attack;
+    }
+
+    public void setAttack(float attack) {
+        this.attack = attack;
+    }
+
+    public float getDefence() {
+        return defence;
+    }
+
+    public void setDefence(float defence) {
+        this.defence = defence;
+    }
+
+    public int getMove() {
+        return move;
+    }
+
+    public void setMove(int move) {
+        this.move = move;
+    }
+
+    private float attack;
+    private float defence;
+    private int move;
+
+    public int getPos() {
+        return pos;
+    }
+
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
+
+    private int pos;
+
+    public float getHP() {
+        return HP;
+    }
+
+    public void setHP(float HP) {
+        this.HP = HP;
+    }
+
+    public int getXP() {
+        return XP;
+    }
+
+    public void setXP(int XP) {
+        this.XP = XP;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+    public void addSidekick(Sidekick sk){
+
+        sidekicks_list.add(sk);
+    }
+
+    public void changeLevelandIncreasehealth() {
+        int x = this.getLevel();
+        int y;
+        if (this.getXP() >= 60) {
+            this.setLevel(4);
+            this.setHP(250);
+            y=4;
+            this.HP_acctolevel=250;
+            this.setAttack(this.getAttack()+4-x);
+            this.setDefence(this.getDefence()+4-x);
+        } else if (this.getXP() >= 40) {
+            this.setLevel(3);
+            this.setHP(200);
+            y=3;
+            this.HP_acctolevel=200;
+            this.setAttack(this.getAttack()+3-x);
+            this.setDefence(this.getDefence()+3-x);
+        } else if (this.getXP() >= 20) {
+            this.setLevel(2);
+            this.setHP(150);
+            y=2;
+            this.HP_acctolevel=150;
+            this.setAttack(this.getAttack()+2-x);
+            this.setDefence(this.getDefence()+2-x);
+        } else {
+            this.setHP(100);
+            this.HP_acctolevel=100;
+            y=1;
+            this.setAttack(this.getAttack()+1-x);
+            this.setDefence(this.getDefence()+1-x);
+        }
+        this.special_attack=false;
+        this.move=0;
+        System.out.println("Level: "+this.getLevel());
+        System.out.println((4-x)*20+" XP awarded");
+        System.out.println("Proceed further");
+    }
+
+    public void attack(Monster mq) {
+        System.out.println("attack");
+    }
+
+    public void defence(Monster mq) {
+        System.out.println("defense");
+    }
+
+    public void specialAttack(Monster mq){
+
+    }
+
+
+
+    public void enemyAttack(Monster mq){
+        System.out.println("Monster attack");
+        double randomgaussian = (1/Math.pow(Math.PI*2, 0.5))*(Math.exp(-0.5*Math.pow(new Random().nextInt(3), 2)));
+        if(mq.type.equals("Lionfang")){
+                float m= (float) Math.random();
+                if(m>0.1){///Higher Probability
+                    if(0.25*randomgaussian*mq.getHP()>=this.defence_temp+this.getHP()){
+                        System.out.println("Hero died , you will start again but you will have same level.");
+                        this.changeLevelandIncreasehealth();
+                        System.out.println("You are at the starting location(13), choose your path");
+                    }
+                    else if(0.25*randomgaussian*mq.getHP()>this.defence_temp) {
+                        this.setHP((float) (this.getHP() - 0.25 * randomgaussian * mq.getHP()) + this.defence_temp);
+                        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                        this.printHP(mq);
+                        //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+                        this.defence_temp=0;
+                        //System.out.println(this.getHP());
+                        this.fight(mq,this.getPos());
+                    }
+                    else{
+                        System.out.println("Hero successfully defended against the attack");
+                        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                        this.printHP(mq);
+                        //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+                        this.defence_temp=0;
+                        //System.out.println(this.getHP());
+                        this.fight(mq,this.getPos());
+                    }
+
+                }
+                else{
+                    float a = (float) (0.5*this.getHP());
+                    if(this.getHP()+this.defence_temp-a<=0){
+                        //DIE
+                        System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
+                        this.changeLevelandIncreasehealth();
+                        System.out.println("You are at the starting location(13), choose your path");
+                        this.g1.printnextPositions(13);
+                    }
+                    else if(a>this.defence_temp){
+                        this.setHP(this.getHP()-a+this.defence_temp);
+                        System.out.println("The attack by monster is "+a);
+                        this.printHP(mq);
+                        this.defence_temp=0;
+                        this.fight(mq,this.getPos());
+                    }
+                    else{
+                        System.out.println("Hero successfully defended against the attack");
+                        System.out.println("The attack by monster is "+a);
+                        this.printHP(mq);
+                        this.defence_temp=0;
+                        this.fight(mq,this.getPos());
+                    }
+
+                }
+        }
+        else{
+            if(0.25*randomgaussian*mq.getHP()>=this.defence_temp+this.getHP()){
+                System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
+                this.changeLevelandIncreasehealth();
+                System.out.println("You are at the starting location(13), choose your path");
+                this.g1.printnextPositions(13);
+            }
+            else if(0.25*randomgaussian*mq.getHP()>this.defence_temp) {
+                this.setHP((float) (this.getHP() - 0.25 * randomgaussian * mq.getHP()) + this.defence_temp);
+                System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                this.printHP(mq);
+                //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+                this.defence_temp=0;
+                //System.out.println(this.getHP());
+                this.fight(mq,this.getPos());
+            }
+            else{
+                System.out.println("Hero successfully defended against the attack");
+                System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                this.printHP(mq);
+                //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
+                this.defence_temp=0;
+                //System.out.println(this.getHP());
+                this.fight(mq,this.getPos());
+            }
+
+        }
+
+    }
+
+    public void printHP(Monster mq){
+        System.out.println("Your HP is "+this.getHP()+"/"+this.HP_acctolevel+" Monster's HP is "+mq.getHP()+"/"+mq.HP_acctolevel);
+    }
+
+
+    public void fight(Monster mq , int pos) {
+        this.setPos(pos);
+        Scanner scan = new Scanner(System.in);
+        System.out.println("You are fighting a level "+mq.getLevel()+" Monster");
+        System.out.println("choose");
+        if (this.getMove() >= 3) {
+            System.out.println("1) Attack");
+            System.out.println("2) Defense");
+            System.out.println("3) Special Attack");
+            int choose = scan.nextInt();
+            switch (choose) {
+                case 1:
+                    System.out.println("You have chosen to attack");
+                    this.attack(mq);
+                    break;
+
+                case 2:
+                    System.out.println("You have chosen to defend");
+                    this.defence(mq);
+                    break;
+                case 3:
+                    System.out.println("Special power activated \n Performing special attack.");
+                    this.specialAttack(mq);
+                    break;
+            }
+        } else {
+            System.out.println("1) Attack");
+            System.out.println("2) Defense");
+            int choose = scan.nextInt();
+            switch (choose) {
+                case 1:
+                    System.out.println("You have chosen to attack");
+                    this.attack(mq);
+                    break;
+
+                case 2:
+                    System.out.println("You have chosen to defend");
+                    this.defence(mq);
+                    break;
+            }
+
+        }
+
+        this.special_attack=false;
+    }
+
+    public void sortSidekick(){
+        int max_xp=0;
+        int max_i=0;
+        for(int i=0;i<this.sidekicks_list.size();i++){
+            if(sidekicks_list.get(i).getXP()>max_xp){
+                max_xp=sidekicks_list.get(i).getXP();
+                max_i=i;
+            }
+        }
+        this.sidekick=this.sidekicks_list.get(max_i);
+    }
+
+    public void buySidekick(){
+        Scanner scan = new Scanner(System.in);
+        System.out.println("If you wanna buy a minion ,press 1");
+        System.out.println("If you wanna buy a knight ,press 2");
+        int sidechoice = scan.nextInt();
+        int xp;
+        switch (sidechoice){
+            case 1:
+                System.out.println("XP to send: ");
+                xp=scan.nextInt();
+                Sidekick min = new Minion(this,xp);
+                this.addSidekick(min);
+                this.setXP(this.getXP()-xp);
+                System.out.println("You bought a sidekick: minion");
+                System.out.println("XP left is "+this.getXP());
+                System.out.println("XP of the sidekick : "+min.getXP());
+                System.out.println("Attack of sidekick is: "+min.inc_attack);
+                break;
+            case 2:
+                System.out.println("XP to send: ");
+                xp=scan.nextInt();
+                Sidekick knight = new Knight(this,xp);
+                this.addSidekick(knight);
+                this.setXP(this.getXP()-xp);
+                System.out.println("You bought a sidekick: knight");
+                System.out.println("XP left is "+this.getXP());
+                System.out.println("XP of the sidekick : "+knight.getXP());
+                System.out.println("Attack of sidekick is: "+knight.inc_attack);
+        }
+    }
+}
+
+class Warrior extends Hero{
+    int count;
+    public Warrior(){
+        this.setAttack(10);
+        this.setDefence(3);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        this.special_attack=false;
+        this.count=3;
+    }
+
+    @Override
+    public void attack(Monster mq){
+        System.out.println(this.count);
+        System.out.println(this.getMove());
+        if(special_attack && this.count>0){
+            if(mq.getHP()-this.getAttack()-5<=0){
+                if(mq.type=="Lionfang"){
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                }
+                else{
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Monster dead");
+                    System.out.println("Proceed to next location");
+                    this.setXP(this.getXP() + mq.getLevel() * 20);
+                    System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                    String buychoice = scan.next();
+                    if(buychoice.equals("yes")){
+                        System.out.println("Your current XP is "+this.getXP());
+                        this.buySidekick(); // Buying finished... Now we start with next location
+                        this.setHP(this.HP_acctolevel);
+                    }
+                    else{
+                        this.changeLevelandIncreasehealth();
+                    }
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos() + 1);
+                }
+            }
+            else {
+                    mq.setHP(mq.getHP() - this.getAttack() - 5);
+                    System.out.println("The attack by hero is");
+                    System.out.println(this.getAttack() + 5);
+                    this.count--;
+                    System.out.println(mq.getHP());
+                    this.setMove(this.getMove() + 1);
+                    this.enemyAttack(mq);
+
+            }
+        }
+        else{
+            if(mq.getHP()-this.getAttack()<=0){
+                if (mq.type == "Lionfang") {
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                }
+                else{
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Monster dead");
+                    System.out.println("Proceed to next location");
+                    this.setXP(this.getXP() + mq.getLevel() * 20);
+                    System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                    String buychoice = scan.next();
+                    if(buychoice.equals("yes")){
+                        System.out.println("Your current XP is "+this.getXP());
+                        this.buySidekick(); // Buying finished... Now we start with next location
+                        this.setHP(this.HP_acctolevel);
+                    }
+                    else{
+                        this.changeLevelandIncreasehealth();
+                    }
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos()+1);
+                }
+                }
+            else {
+                this.special_attack = false;
+                mq.setHP(mq.getHP() - this.getAttack());
+                System.out.println("The attack by hero is");
+                System.out.println(this.getAttack());
+                //System.out.println("Special Power Deactivated");
+                this.count = 3;
+                System.out.println(mq.getHP());
+                this.setMove(this.getMove()+1);
+                this.enemyAttack(mq);
+            }
+        }
+
+        //System.out.println(mq.getLevel());
+    }
+
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            this.defence_temp=this.getDefence()+5;
+            this.count--;
+        }
+        else {
+            this.special_attack = false;
+
+            this.defence_temp = this.getDefence();
+
+            this.setMove(this.getMove() + 1);
+            this.enemyAttack(mq);
+        }
+    }
+
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+
+
+
+
+
+
+}
+
+class Magi extends Hero {
+    int count;
+
+    public Magi() {
+        this.setAttack(5);
+        this.setDefence(5);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp = 0;
+        this.special_attack = false;
+        this.count =3;
+    }
+
+
+    //@Override
+//    public void attack(Monster mq){
+//        System.out.println(this.count);
+//        System.out.println(this.getMove());
+//        if(special_attack && this.count>0) {
+//            mq.setHP((float) (mq.getHP() * 0.95));
+//            this.count--;
+//        }
+//
+//
+//
+//
+//        else{
+//            if(mq.getHP()-this.getAttack()<=0){
+//                if (mq.type == "Lionfang") {
+//                    System.out.println("Lionfang is dead. Congratulations you win");
+//                    return;
+//                }
+//                else{
+//                    System.out.println("Monster dead");
+//                    this.setXP(this.getXP() + mq.getLevel() * 20);
+//                    this.changeLevelandIncreasehealth();
+//                    mq.setHP(mq.HP_acctolevel);
+//                    //this.g1.printnextPositions(this.getPos()+1);
+//                }
+//            }
+//            else {
+//                this.special_attack = false;
+//                mq.setHP(mq.getHP() - this.getAttack());
+//                System.out.println("The attack by hero is");
+//                System.out.println(this.getAttack());
+//                //System.out.println("Special Power Deactivated");
+//                this.count = 3;
+//                System.out.println(mq.getHP());
+//                this.setMove(this.getMove()+1);
+//                this.enemyAttack(mq);
+//            }
+//        }
+//
+//        //System.out.println(mq.getLevel());
+//    }
+
+
+
+
+
+
+
+    @Override
+    public void attack(Monster mq) {
+        if (special_attack && this.count > 0) {
+            mq.setHP((float) (mq.getHP() * 0.95));
+            this.count--;
+        }
+        if(mq.getHP()<=this.getAttack()){
+            if (mq.type == "Lionfang") {
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                }
+                else{
+                    System.out.println("Monster dead");
+                Scanner scan = new Scanner(System.in);
+                System.out.println("Monster dead");
+                System.out.println("Proceed to next location");
+                this.setXP(this.getXP() + mq.getLevel() * 20);
+                System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                String buychoice = scan.next();
+                if(buychoice.equals("yes")){
+                    System.out.println("Your current XP is "+this.getXP());
+                    this.buySidekick(); // Buying finished... Now we start with next location
+                    this.setHP(this.HP_acctolevel);
+                }
+                else{
+                    this.changeLevelandIncreasehealth();
+                }
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos()+1);
+                }
+        }
+        else {
+            mq.setHP(mq.getHP() - this.getAttack());
+            System.out.println("The attack inflicted by you on the monster is " + this.getAttack());
+            this.printHP(mq);
+            this.setMove(this.getMove() + 1);
+            this.enemyAttack(mq);
+        }
+    }
+
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            mq.setHP((float) (mq.getHP()*0.95));
+            this.count--;
+        }
+
+            this.special_attack=false;
+
+            this.defence_temp=this.getDefence();
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+
+}
+class Thief extends Hero{
+    //int count;
+    public Thief(){
+        this.setAttack(6);
+        this.setDefence(4);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        //this.special_attack=false;
+        //this.count=3;
+    }
+
+    @Override
+    public void attack(Monster mq) {
+        if (mq.getHP() - this.getAttack() <= 0) {
+            if (mq.type == "Lionfang") {
+                System.out.println("Lionfang is dead. Congratulations you win");
+                return;
+            } else {
+                //System.out.println("Monster dead");
+                Scanner scan = new Scanner(System.in);
+                System.out.println("Monster dead");
+                System.out.println("Proceed to next location");
+                this.setXP(this.getXP() + mq.getLevel() * 20);
+                System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                String buychoice = scan.next();
+                if(buychoice.equals("yes")){
+                    System.out.println("Your current XP is "+this.getXP());
+                    this.buySidekick(); // Buying finished... Now we start with next location
+                    this.setHP(this.HP_acctolevel);
+                }
+                else{
+                    this.changeLevelandIncreasehealth();
+                }
+                mq.setHP(mq.HP_acctolevel);
+                //this.g1.printnextPositions(this.getPos()+1);
+            }
+        } else {
+            mq.setHP(mq.getHP() - this.getAttack());
+            System.out.println("The attack by hero is");
+            System.out.println(this.getAttack());
+            System.out.println(mq.getHP());
+            this.setMove(this.getMove() + 1);
+            this.enemyAttack(mq);
+        }
+    }
+
+    @Override
+    public void defence(Monster mq){
+            this.defence_temp=this.getDefence();
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+
+    @Override
+    public void specialAttack(Monster mq) {
+        //special_attack=true;
+        float a = (float) (mq.getHP() * 0.3);
+        if (mq.getHP() - a <= 0) {
+            if (mq.type == "Lionfang") {
+                System.out.println("Lionfang is dead. Congratulations you win");
+                return;
+            } else {
+                //System.out.println("Monster dead");
+                Scanner scan = new Scanner(System.in);
+                System.out.println("Monster dead");
+                System.out.println("Proceed to next location");
+                this.setXP(this.getXP() + mq.getLevel() * 20);
+                System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                String buychoice = scan.next();
+                if(buychoice.equals("yes")){
+                    System.out.println("Your current XP is "+this.getXP());
+                    this.buySidekick(); // Buying finished... Now we start with next location
+                    this.setHP(this.HP_acctolevel);
+                }
+                else{
+                    this.changeLevelandIncreasehealth();
+                }
+                mq.setHP(mq.HP_acctolevel);
+                //this.g1.printnextPositions(this.getPos()+1);
+            }
+        } else {
+            //System.out.println("Special Power Activated \n Performing Special Attack");
+            mq.setHP(mq.getHP() - a);
+            System.out.println("You have stolen " + a + " health of the monster");
+            printHP(mq);
+
+            //this.setMove(this.getMove()+1);
+            this.setMove(0);
+            this.enemyAttack(mq);
+        }
+    }
+}
+
+class Healer extends Hero{
+    int count;
+    public Healer(){
+        this.setAttack(4);
+        this.setDefence(8);
+        //this.setSpecial_attack();
+        this.setMove(0);
+        this.defence_temp=0;
+        this.special_attack=false;
+        this.count=3;
+    }
+//@Override
+//    public void attack(Monster mq){
+//        if(special_attack && this.count>0){
+//            this.setHP((float)(this.getHP()*1.05));
+//            this.count--;
+//        }
+//        else{
+//            this.special_attack=false;
+//            this.count=3;
+//        }
+//        mq.setHP(mq.getHP()-this.getAttack());
+//        this.printHP(mq);
+//        this.setMove(this.getMove()+1);
+//        this.enemyAttack(mq);
+//    }
+
+    @Override
+    public void attack(Monster mq) {
+        if (special_attack && this.count > 0) {
+            mq.setHP((float) (mq.getHP() * 1.05));
+            this.count--;
+        }
+        if(mq.getHP()<=this.getAttack()){
+            if (mq.type == "Lionfang") {
+                System.out.println("Lionfang is dead. Congratulations you win");
+                return;
+            }
+            else{
+                Scanner scan = new Scanner(System.in);
+                System.out.println("Monster dead");
+                System.out.println("Proceed to next location");
+                this.setXP(this.getXP() + mq.getLevel() * 20);
+                System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                String buychoice = scan.next();
+                if(buychoice.equals("yes")){
+                    System.out.println("Your current XP is "+this.getXP());
+                    this.buySidekick(); // Buying finished... Now we start with next location
+                    this.setHP(this.HP_acctolevel);
+                }
+                else{
+                    this.changeLevelandIncreasehealth();
+                }
+                mq.setHP(mq.HP_acctolevel);
+                //this.g1.printnextPositions(this.getPos()+1);
+            }
+        }
+        else {
+            mq.setHP(mq.getHP() - this.getAttack());
+            System.out.println("The attack inflicted by you on the monster is " + this.getAttack());
+            this.printHP(mq);
+            this.setMove(this.getMove() + 1);
+            this.enemyAttack(mq);
+        }
+    }
+    @Override
+    public void defence(Monster mq){
+
+        if(special_attack && this.count>0){
+            this.setHP((float) (this.getHP()*1.05));
+            this.count--;
+        }
+            this.defence_temp=this.getDefence();
+
+        this.setMove(this.getMove()+1);
+        this.enemyAttack(mq);
+
+    }
+    public void specialAttack(Monster mq){
+        special_attack=true;
+        //this.setMove(this.getMove()+1);
+        this.setMove(0);
+        this.enemyAttack(mq);
+    }
+}
+
+
+
+class Sidekick extends Hero{
+    protected float inc_attack;
+    @Override
+    public void attack(Monster mq){
+        mq.setHP(mq.getHP()-this.inc_attack);
+    }
+
+}
+
+class Minion extends Sidekick{
+    public Minion(Hero h1,int x){
+        this.inc_attack =1+(float)((x-5)*0.5);
+        this.setHP(100);
+        this.setXP(0);
+    }
+
+    public void doclone(){
+
+    }
+
+
+
+}
+
+class Knight extends Sidekick{
+    public Knight(Hero h1,int x){
+        this.inc_attack =2+(float)((x-8)*0.5);
+        this.setHP(100);
+        this.setXP(1);
+    }
+
+
+}
+
+
+
+
+
+
+
+
+class Monster{
+    private float HP;
+    private int level;
+    int HP_acctolevel;
+    public String type;
+
+
+    public float getHP() {
+        return HP;
+    }
+
+    public void setHP(float HP) {
+        this.HP = HP;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
+
+
+
+}
+
+
+
+class Goblin extends Monster{
+
+    public Goblin(){
+        this.setHP(100);
+        this.setLevel(1);
+        this.type="Goblin";
+        this.HP_acctolevel=100;
+
+    }
+
+
+}
+
+
+class Lionfang extends Monster{
+        public Lionfang(){
+            this.setHP(250);
+            this.setLevel(4);
+            this.type="Lionfang";
+            this.HP_acctolevel=250;
+        }
+
+}
+
+class Zombies extends Monster{
+
+    public Zombies(){
+        this.setHP(150);
+        this.setLevel(2);
+        this.type="Zombies";
+        this.HP_acctolevel=150;
+    }
+
+}
+
+class Fiends extends Monster{
+
+    public Fiends(){
+        this.setHP(200);
+        this.setLevel(3);
+        this.type="Fiends";
+        this.HP_acctolevel=200;
+    }
+
+}
+class Game{
+    Random rand = new Random();
+    Graphs g;
+    int check=0;
+    ArrayList<Integer> pos_list;
+    HashMap<Integer,Integer> pos_map;
+    ArrayList<Monster> monster_list;
+
+    public Game(){
+        this.g= new Graphs(26);
+        this.pos_map = new HashMap<Integer, Integer>();
+        this.monster_list = new ArrayList<Monster>();
+        createGraph();
+    }
+
+
+
+    void printlist(){
+        for(int i=0;i<monster_list.size();i++){
+            System.out.print(monster_list.get(i).type+" ");
+        }
+    }
+//
+//    void fight(int x){
+//        System.out.println("");
+//    }
+
+
+
+
+    void createGraph(){
+        this.g = new Graphs(26);
+        for(int i=1;i<=25;i++){
+            if(i!=1 && i!=5 && i!=21 && i!=25){
+                if(i==3 || i==2 || i==4){
+                    this.g.addEdge(i,i+5);
+                    this.g.addEdge(i,25+i-5);
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);}
+            else if(i==22 || i==23 || i==24){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i-20);
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);
+                }
+            else if(i==10 || i==15 || i==20){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i-4);
+                    this.g.addEdge(i,i+5);
+                }
+            else if(i==6 || i==11 || i==16){
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i+4);
+                    this.g.addEdge(i,i+5);
+                }
+
+            else{
+                    this.g.addEdge(i,i-1);
+                    this.g.addEdge(i,i+1);
+                    this.g.addEdge(i,i-5);
+                    this.g.addEdge(i,i+5);
+                }
+
+
+            }
+            else {
+                if (i == 1) {
+                    this.g.addEdge(1, 2);
+                    this.g.addEdge(1, 6);
+                } else if (i == 5) {
+                    this.g.addEdge(5, 4);
+                    this.g.addEdge(5, 10);
+                } else if (i == 21) {
+                    this.g.addEdge(21, 16);
+                    this.g.addEdge(21, 22);
+                } else if (i == 25) {
+                    this.g.addEdge(25, 24);
+                    this.g.addEdge(25, 20);
+                }
+            }
+        }
+
+
+    }
+
+    void printnextPositions(int x){
+        pos_list=new ArrayList<>();
+        for(int i=0;i<this.g.adj.get(x).size();i++){
+            System.out.println(i+1+") Go to location "+this.g.adj.get(x).get(i));
+            pos_map.put(i,this.g.adj.get(x).get(i));
+            pos_list.add(this.g.adj.get(x).get(i));
+        }
+    }
+
+    void addRandomMonsters() {
+        int rand_1;
+        Monster m;
+        for (int i = 0; i < 25; i++) {
+            rand_1 = rand.nextInt(3);
+            rand_1++;
+            if (i != 0 && i!=4 && i!=20 && i!=24){
+                if (rand_1 == 1) {
+                    m = new Goblin();
+                    monster_list.add(m);
+                } else if (rand_1 == 2) {
+                    m = new Zombies();
+                    monster_list.add(m);
+
+                } else if (rand_1 == 3) {
+                    m = new Fiends();
+                    monster_list.add(m);
+                }
+            }
+            if(i==0 || i==4 || i==20 || i==24){
+                m=new Lionfang();
+                monster_list.add(m);
+            }
+
+
+        }
+    }
+
+        }
+
+public class Assignment3{
+
+    public static HashMap<String,Player> player_map= new HashMap<String,Player>();
+    public static HashMap<String,Monster> monster_map;
+    public static ArrayList<Sidekick> sidekick_list;
+    public static ArrayList<Player> playerlist;
+    //hero_map= new HashMap<String,Hero>();
+
+    static void openingMenu(){
+        Scanner scan = new Scanner(System.in);
+        playerlist = new ArrayList<Player>();
+        //player_map = new HashMap<String,Player>();
+        System.out.println("Welcome to ArchLegend");
+        System.out.println("Choose option");
+        System.out.println("1) New User");
+        System.out.println("2) Existing User");
+        System.out.println("3) Exit");
+        int choice = scan.nextInt();
+        switch(choice){
+            case 1:
+                System.out.println("Enter new username");
+                String uname = scan.next();
+                System.out.println("Choose a hero");
+                System.out.println("1) Warrior");
+                System.out.println("2) Magi");
+                System.out.println("3) Thief");
+                System.out.println("4) Healer");
+                int heroChoice = scan.nextInt();
+                Hero h;
+                Player p;
+                switch(heroChoice){
+                    case 1:h= new Warrior();
+                        p=new Player(uname,h);
+                        p.setType("Warrior");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 2:h = new Magi();
+                        //h.setType("Magi");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Magi");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 3:h= new Thief();
+                        //h.setType("Thief");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Thief");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case 4:h = new Healer();
+                        //h.setType("Healer");
+                        //hero_map.put(uname,h);
+                        p=new Player(uname,h);
+                        p.setType("Healer");
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                        break;
+                    case -1: openingMenu();
+                    default:h= new Warrior();
+                        //h.setType("none");
+                        p=new Player(uname,h);
+                        playerlist.add(p);
+                        player_map.put(uname,p);
+                        System.out.println(player_map.keySet());
+                }
+                System.out.println("User creation is done! New user is: "+uname+" The user type is :"+p.getType()+" Login to play the game. Exiting");
+                openingMenu();
+                break;
+            case 2:
+                System.out.println(player_map.keySet());
+                System.out.println("Enter username");
+                String exuname = scan.next();
+                if(player_map.containsKey(exuname)){
+                    System.out.println("User Found. Logging in......");
+                    System.out.println("Welcome "+ exuname);
+                    Game game = new Game();
+                    h=player_map.get(exuname).h;
+                    h.g1=game;
+                    game.addRandomMonsters();
+                    //game.monster_list.set(12,);
+                    game.printlist();
+                    //game.g.display();
+                    System.out.println("You are at the starting location(13), choose your path");
+                    game.printnextPositions(13);
+                    System.out.println("Enter -1 to exit");
+                    int pos = scan.nextInt();
+                    if(pos==-1){
+                        openingMenu();
+                    }
+                    else {
+                        while(game.pos_list.get(pos-1)!=1 && game.pos_list.get(pos-1)!=5 && game.pos_list.get(pos-1)!=21 && game.pos_list.get(pos-1)!=25) {
+//                            if(game.pos_list.get(pos) == 1)
+//                            {
+//                                System.out.println("in");
+//                                break;
+//                            }
+                            h=player_map.get(exuname).h;
+                            System.out.println(h);
+                            System.out.println(game.pos_list);
+                            game.pos_list.get(pos);
+                            if(game.check!=0) {
+                                System.out.println("Type yes if you wish to use a sidekick , else type no");
+                                String playside = scan.next();
+                                if (playside.equals("yes")) {
+                                    h.sortSidekick();//Choose sidekick according to the xp
+                                    System.out.println("You have a sidekick " + h.sidekick.getClass() + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                }
+                            }
+                            //h.fight(game.monster_list.get(pos),pos);
+                            //h.fight(new Goblin(),pos-1);
+                            h.fight(game.monster_list.get(game.pos_list.get(pos-1)-1),game.pos_list.get(pos-1));
+                            game.check++;
+                            pos = pos - 1;
+                            System.out.println("You are at the location(" + game.pos_list.get(pos) + "), choose your path");
+                            game.printnextPositions(game.pos_list.get(pos)); /// CALL
+                            System.out.println("Enter -1 to exit");
+                            pos = scan.nextInt();
+                            if(pos==-1){
+                                openingMenu();
+                            }
+                            //game.pos_list.get(pos);
+                           //System.out.println(pos-1);
+                            //System.out.println(game.pos_list.get(pos-1));
+                            if(game.pos_list.get(pos-1) == 1 || game.pos_list.get(pos-1) == 5 || game.pos_list.get(pos-1) ==21  || game.pos_list.get(pos-1) == 25) {
+                                //System.out.println("in");
+                                if(game.check!=0) {
+                                    System.out.println("Type yes if you wish to use a sidekick , else type no");
+                                    String playside = scan.next();
+                                    if (playside.equals("yes")) {
+                                        h.sortSidekick();//Choose sidekick according to the xp
+                                        System.out.println("You have a sidekick " + h.sidekick.getClass() + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                    }
+                                }
+                                h.fight(game.monster_list.get(game.pos_list.get(pos-1)-1),game.pos_list.get(pos-1));
+                                break;
+                            }
+
+
+
+                        }
+
+                    }
+                }
+                else{
+                    System.out.println("Sorry the username does not exist , please try again");
+                    openingMenu();
+                }
+                break;
+            case 3:System.exit(0);
+            break;
+        }
+    }
+
+    public static void main(String[] args) {
+
+        openingMenu();
+
+
+    }
+}
