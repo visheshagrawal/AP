@@ -65,7 +65,7 @@ class Hero {
     float defence_temp=0;
     boolean special_attack;
     int HP_acctolevel=100;
-    Sidekick sidekick; // The hero is assigned this as a sidekick we can change the sidekick
+    Sidekick sidekick=null; // The hero is assigned this as a sidekick we can change the sidekick
     //After everytime we see the list.
     ArrayList<Sidekick> sidekicks_list= new ArrayList<Sidekick>();
 //    ArrayList<Monster> m_list;
@@ -208,6 +208,16 @@ class Hero {
                     else if(0.25*randomgaussian*mq.getHP()>this.defence_temp) {
                         this.setHP((float) (this.getHP() - 0.25 * randomgaussian * mq.getHP()) + this.defence_temp);
                         System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                        if(this.sidekick!=null) {
+                            this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                            System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                            this.sidekick.printHP();
+                            if(this.sidekick.getHP()<=0){
+                                System.out.println("Sidekick died");
+                                this.sidekicks_list.remove(this.sidekick);
+                                this.sidekick=null;
+                            }
+                        }
                         this.printHP(mq);
                         //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
                         this.defence_temp=0;
@@ -216,7 +226,17 @@ class Hero {
                     }
                     else{
                         System.out.println("Hero successfully defended against the attack");
-                        System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                        System.out.println("The attack by monster on hero is "+0.25*randomgaussian*mq.getHP());
+                        if(this.sidekick!=null) {
+                            this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                            System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                            this.sidekick.printHP();
+                            if(this.sidekick.getHP()<=0){
+                                System.out.println("Sidekick died");
+                                this.sidekicks_list.remove(this.sidekick);
+                                this.sidekick=null;
+                            }
+                        }
                         this.printHP(mq);
                         //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
                         this.defence_temp=0;
@@ -232,11 +252,21 @@ class Hero {
                         System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
                         this.changeLevelandIncreasehealth();
                         System.out.println("You are at the starting location(13), choose your path");
-                        this.g1.printnextPositions(13);
+                        //this.g1.printnextPositions(13);
                     }
                     else if(a>this.defence_temp){
                         this.setHP(this.getHP()-a+this.defence_temp);
-                        System.out.println("The attack by monster is "+a);
+                        System.out.println("The attack by monster on hero is "+a);
+                        if(this.sidekick!=null) {
+                            this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * a));
+                            System.out.println("The attack by monster on sidekick is "+1.5*a);
+                            this.sidekick.printHP();
+                            if(this.sidekick.getHP()<=0){
+                                System.out.println("Sidekick died");
+                                this.sidekicks_list.remove(this.sidekick);
+                                this.sidekick=null;
+                            }
+                        }
                         this.printHP(mq);
                         this.defence_temp=0;
                         this.fight(mq,this.getPos());
@@ -244,6 +274,16 @@ class Hero {
                     else{
                         System.out.println("Hero successfully defended against the attack");
                         System.out.println("The attack by monster is "+a);
+                        if(this.sidekick!=null) {
+                            this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * a));
+                            System.out.println("The attack by monster on sidekick is "+1.5*a);
+                            this.sidekick.printHP();
+                            if(this.sidekick.getHP()<=0){
+                                System.out.println("Sidekick died");
+                                this.sidekicks_list.remove(this.sidekick);
+                                this.sidekick=null;
+                            }
+                        }
                         this.printHP(mq);
                         this.defence_temp=0;
                         this.fight(mq,this.getPos());
@@ -256,11 +296,21 @@ class Hero {
                 System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
                 this.changeLevelandIncreasehealth();
                 System.out.println("You are at the starting location(13), choose your path");
-                this.g1.printnextPositions(13);
+                //this.g1.printnextPositions(13);
             }
             else if(0.25*randomgaussian*mq.getHP()>this.defence_temp) {
                 this.setHP((float) (this.getHP() - 0.25 * randomgaussian * mq.getHP()) + this.defence_temp);
-                System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                System.out.println("The attack by monster on hero is "+0.25*randomgaussian*mq.getHP());
+                if(this.sidekick!=null){
+                this.sidekick.setHP((float) (this.sidekick.getHP()-1.5*(0.25 * randomgaussian * mq.getHP())));
+                System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                    this.sidekick.printHP();
+                if(this.sidekick.getHP()<=0){
+                        System.out.println("Sidekick died");
+                        this.sidekicks_list.remove(this.sidekick);
+                        this.sidekick=null;
+                    }
+                }
                 this.printHP(mq);
                 //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
                 this.defence_temp=0;
@@ -269,7 +319,17 @@ class Hero {
             }
             else{
                 System.out.println("Hero successfully defended against the attack");
-                System.out.println("The attack by monster is "+0.25*randomgaussian*mq.getHP());
+                System.out.println("The attack by monster on hero is "+0.25*randomgaussian*mq.getHP());
+                if(this.sidekick!=null){
+                this.sidekick.setHP((float) (this.sidekick.getHP()-1.5*(0.25 * randomgaussian * mq.getHP())));
+                System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                this.sidekick.printHP();
+                if(this.sidekick.getHP()<=0){
+                    System.out.println("Sidekick died");
+                    this.sidekicks_list.remove(this.sidekick);
+                    this.sidekick=null;
+                }
+                }
                 this.printHP(mq);
                 //this.setHP(this.getHP()-Math.abs((float)(0.25*mq.getHP()*new Random().nextGaussian()))+this.defence_temp);
                 this.defence_temp=0;
@@ -390,8 +450,8 @@ class Warrior extends Hero{
 
     @Override
     public void attack(Monster mq){
-        System.out.println(this.count);
-        System.out.println(this.getMove());
+        //System.out.println(this.count);
+        //System.out.println(this.getMove());
         if(special_attack && this.count>0){
             if(mq.getHP()-this.getAttack()-5<=0){
                 if(mq.type=="Lionfang"){
@@ -640,37 +700,78 @@ class Thief extends Hero{
 
     @Override
     public void attack(Monster mq) {
-        if (mq.getHP() - this.getAttack() <= 0) {
-            if (mq.type == "Lionfang") {
-                System.out.println("Lionfang is dead. Congratulations you win");
-                return;
-            } else {
-                //System.out.println("Monster dead");
-                Scanner scan = new Scanner(System.in);
-                System.out.println("Monster dead");
-                System.out.println("Proceed to next location");
-                this.setXP(this.getXP() + mq.getLevel() * 20);
-                System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
-                String buychoice = scan.next();
-                if(buychoice.equals("yes")){
-                    System.out.println("Your current XP is "+this.getXP());
-                    this.buySidekick(); // Buying finished... Now we start with next location
-                    this.setHP(this.HP_acctolevel);
+        if (this.sidekick != null) {
+            if (mq.getHP() - this.getAttack() - this.sidekick.inc_attack <= 0) {
+                if (mq.type == "Lionfang") {
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                } else {
+                    //System.out.println("Monster dead");
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Monster dead");
+                    System.out.println("Proceed to next location");
+                    int b=this.getXP() + mq.getLevel() * 20;
+                    this.setXP(b);
+                    this.sidekick.setXP(this.sidekick.getXP()+b/10);
+                    System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                    String buychoice = scan.next();
+                    if (buychoice.equals("yes")) {
+                        System.out.println("Your current XP is " + this.getXP());
+                        this.buySidekick(); // Buying finished... Now we start with next location
+                        this.setHP(this.HP_acctolevel);
+                    } else {
+                        this.changeLevelandIncreasehealth();
+                    }
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos()+1);
                 }
-                else{
-                    this.changeLevelandIncreasehealth();
-                }
-                mq.setHP(mq.HP_acctolevel);
-                //this.g1.printnextPositions(this.getPos()+1);
             }
+             else {
+                mq.setHP(mq.getHP() - this.getAttack() - this.sidekick.inc_attack);
+                System.out.println("The attack by hero is "+this.getAttack());
+                System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                //System.out.println(mq.getHP());
+                this.printHP(mq);
+                this.sidekick.printHP();
+                this.setMove(this.getMove() + 1);
+                this.enemyAttack(mq);
+            }
+
+
         } else {
-            mq.setHP(mq.getHP() - this.getAttack());
-            System.out.println("The attack by hero is");
-            System.out.println(this.getAttack());
-            System.out.println(mq.getHP());
-            this.setMove(this.getMove() + 1);
-            this.enemyAttack(mq);
+            if (mq.getHP() - this.getAttack() <= 0) {
+                if (mq.type == "Lionfang") {
+                    System.out.println("Lionfang is dead. Congratulations you win");
+                    return;
+                } else {
+                    //System.out.println("Monster dead");
+                    Scanner scan = new Scanner(System.in);
+                    System.out.println("Monster dead");
+                    System.out.println("Proceed to next location");
+                    this.setXP(this.getXP() + mq.getLevel() * 20);
+                    System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
+                    String buychoice = scan.next();
+                    if (buychoice.equals("yes")) {
+                        System.out.println("Your current XP is " + this.getXP());
+                        this.buySidekick(); // Buying finished... Now we start with next location
+                        this.setHP(this.HP_acctolevel);
+                    } else {
+                        this.changeLevelandIncreasehealth();
+                    }
+                    mq.setHP(mq.HP_acctolevel);
+                    //this.g1.printnextPositions(this.getPos()+1);
+                }
+            }
+             else {
+                mq.setHP(mq.getHP() - this.getAttack());
+                System.out.println("The attack by hero is "+this.getAttack());
+                //System.out.println(mq.getHP());
+                this.printHP(mq);
+                this.setMove(this.getMove() + 1);
+                this.enemyAttack(mq);
+            }
         }
+
     }
 
     @Override
@@ -816,11 +917,15 @@ class Sidekick extends Hero{
         mq.setHP(mq.getHP()-this.inc_attack);
     }
 
+    public void printHP(){
+        System.out.println("Sidekick's HP is "+this.getHP()+"/"+100);
+    }
+
 }
 
 class Minion extends Sidekick{
     public Minion(Hero h1,int x){
-        this.inc_attack =1+(float)((x-5)*0.5);
+        this.inc_attack =(this.getXP()%5)+1+(float)((x-5)*0.5);
         this.setHP(100);
         this.setXP(0);
     }
@@ -835,10 +940,11 @@ class Minion extends Sidekick{
 
 class Knight extends Sidekick{
     public Knight(Hero h1,int x){
-        this.inc_attack =2+(float)((x-8)*0.5);
+        this.inc_attack =(this.getXP()%5)+2+(float)((x-8)*0.5);
         this.setHP(100);
         this.setXP(1);
     }
+
 
 
 }
