@@ -58,6 +58,7 @@ class Player{
 class Hero {
     //static int number=0;
     int check_for_giving_sidekick=0;
+    int flag_clone=0;
     Game g1;
     float HP = 100;
     int XP = 0;
@@ -142,41 +143,41 @@ class Hero {
         sidekicks_list.add(sk);
     }
 
-    public void changeLevelandIncreasehealth() {
+    public void changeLevelandIncreasehealth(Monster mq) {
         int x = this.getLevel();
-        int y;
+        int y=mq.getLevel();
         if (this.getXP() >= 60) {
             this.setLevel(4);
             this.setHP(250);
-            y=4;
+            //y=4;
             this.HP_acctolevel=250;
             this.setAttack(this.getAttack()+4-x);
             this.setDefence(this.getDefence()+4-x);
         } else if (this.getXP() >= 40) {
             this.setLevel(3);
             this.setHP(200);
-            y=3;
+            //y=3;
             this.HP_acctolevel=200;
             this.setAttack(this.getAttack()+3-x);
             this.setDefence(this.getDefence()+3-x);
         } else if (this.getXP() >= 20) {
             this.setLevel(2);
             this.setHP(150);
-            y=2;
+            //y=2;
             this.HP_acctolevel=150;
             this.setAttack(this.getAttack()+2-x);
             this.setDefence(this.getDefence()+2-x);
         } else {
             this.setHP(100);
             this.HP_acctolevel=100;
-            y=1;
+            //y=1;
             this.setAttack(this.getAttack()+1-x);
             this.setDefence(this.getDefence()+1-x);
         }
         this.special_attack=false;
         this.move=0;
         System.out.println("Level: "+this.getLevel());
-        System.out.println((4-x)*20+" XP awarded");
+        System.out.println((mq.getLevel())*20+" XP awarded");
         System.out.println("Proceed further");
     }
 
@@ -202,7 +203,7 @@ class Hero {
                 if(m>0.1){///Higher Probability
                     if(0.25*randomgaussian*mq.getHP()>=this.defence_temp+this.getHP()){
                         System.out.println("Hero died , you will start again but you will have same level.");
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                         System.out.println("You are at the starting location(13), choose your path");
                         this.g1.printnextPositions(13);
                     }
@@ -212,9 +213,21 @@ class Hero {
                         if(this.sidekick!=null) {
                             this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
                             System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                            if(this.sidekick.min_list!=null){
+                                for(int i=0;i<this.sidekick.min_list.size();i++){
+                                    this.sidekick.min_list.get(i).setHP((float) (this.sidekick.min_list.get(i).getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                                    System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                                }
+                            }
                             this.sidekick.printHP();
                             if(this.sidekick.getHP()<=0){
                                 System.out.println("Sidekick died");
+                                if(this.sidekick.min_list!=null){
+                                    for(int i=0;i<this.sidekick.min_list.size();i++){
+                                        System.out.println("Sidekick died");
+                                    }
+                                }
+                                this.sidekick.min_list=null;
                                 this.sidekicks_list.remove(this.sidekick);
                                 this.sidekick=null;
                             }
@@ -231,9 +244,26 @@ class Hero {
                         if(this.sidekick!=null) {
                             this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
                             System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                            if(this.sidekick.min_list!=null){
+                                for(int i=0;i<this.sidekick.min_list.size();i++){
+                                    this.sidekick.min_list.get(i).setHP((float) (this.sidekick.min_list.get(i).getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                                    System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                                }
+                            }
                             this.sidekick.printHP();
+                            if(this.sidekick.min_list!=null){
+                                for(int i=0;i<this.sidekick.min_list.size();i++){
+                                    this.sidekick.min_list.get(i).printHP();
+                                }
+                            }
                             if(this.sidekick.getHP()<=0){
                                 System.out.println("Sidekick died");
+                                if(this.sidekick.min_list!=null){
+                                    for(int i=0;i<this.sidekick.min_list.size();i++){
+                                        System.out.println("Sidekick Died");
+                                    }
+                                }
+                                this.sidekick.min_list=null;
                                 this.sidekicks_list.remove(this.sidekick);
                                 this.sidekick=null;
                             }
@@ -251,7 +281,7 @@ class Hero {
                     if(this.getHP()+this.defence_temp-a<=0){
                         //DIE
                         System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                         System.out.println("You are at the starting location(13), choose your path");
                         this.g1.printnextPositions(13);
                     }
@@ -261,9 +291,26 @@ class Hero {
                         if(this.sidekick!=null) {
                             this.sidekick.setHP((float) (this.sidekick.getHP() - 1.5 * a));
                             System.out.println("The attack by monster on sidekick is "+1.5*a);
+                            if(this.sidekick.min_list!=null){
+                                for(int i=0;i<this.sidekick.min_list.size();i++){
+                                    this.sidekick.min_list.get(i).setHP((float) (this.sidekick.min_list.get(i).getHP() - 1.5 * a));
+                                    System.out.println("The attack by monster on sidekick is "+1.5*a);
+                                }
+                            }
                             this.sidekick.printHP();
+                            if(this.sidekick.min_list!=null){
+                                for(int i=0;i<this.sidekick.min_list.size();i++){
+                                    this.sidekick.min_list.get(i).printHP();
+                                }
+                            }
                             if(this.sidekick.getHP()<=0){
                                 System.out.println("Sidekick died");
+                                if(this.sidekick.min_list!=null){
+                                    for(int i=0;i<this.sidekick.min_list.size();i++){
+                                        System.out.println("Sidekick died");
+                                    }
+                                }
+                                this.sidekick.min_list=null;
                                 this.sidekicks_list.remove(this.sidekick);
                                 this.sidekick=null;
                             }
@@ -295,7 +342,7 @@ class Hero {
         else{
             if(0.25*randomgaussian*mq.getHP()>=this.defence_temp+this.getHP()){
                 System.out.println("You died. You have same level as before with the same monsters \n and you'll start from the starting position");
-                this.changeLevelandIncreasehealth();
+                this.changeLevelandIncreasehealth(mq);
                 System.out.println("You are at the starting location(13), choose your path");
                 this.g1.printnextPositions(13);
             }
@@ -305,9 +352,26 @@ class Hero {
                 if(this.sidekick!=null){
                 this.sidekick.setHP((float) (this.sidekick.getHP()-1.5*(0.25 * randomgaussian * mq.getHP())));
                 System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            this.sidekick.min_list.get(i).setHP((float) (this.sidekick.min_list.get(i).getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                            System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                        }
+                    }
                     this.sidekick.printHP();
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            this.sidekick.min_list.get(i).printHP();
+                        }
+                    }
                 if(this.sidekick.getHP()<=0){
                         System.out.println("Sidekick died");
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            System.out.println("Sidekick died");
+                        }
+                    }
+                        this.sidekick.min_list=null;
                         this.sidekicks_list.remove(this.sidekick);
                         this.sidekick=null;
                     }
@@ -324,9 +388,27 @@ class Hero {
                 if(this.sidekick!=null){
                 this.sidekick.setHP((float) (this.sidekick.getHP()-1.5*(0.25 * randomgaussian * mq.getHP())));
                 System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            this.sidekick.min_list.get(i).setHP((float) (this.sidekick.min_list.get(i).getHP() - 1.5 * 0.25*randomgaussian*mq.getHP()));
+                            System.out.println("The attack by monster on sidekick is "+1.5*0.25*randomgaussian*mq.getHP());
+                        }
+                    }
                 this.sidekick.printHP();
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            this.sidekick.min_list.get(i).printHP();
+                        }
+                    }
+
                 if(this.sidekick.getHP()<=0){
                     System.out.println("Sidekick died");
+                    if(this.sidekick.min_list!=null){
+                        for(int i=0;i<this.sidekick.min_list.size();i++){
+                            System.out.println("Sidekick died");
+                        }
+                    }
+                    this.sidekick.min_list=null;
                     this.sidekicks_list.remove(this.sidekick);
                     this.sidekick=null;
                 }
@@ -452,8 +534,12 @@ class Warrior extends Hero{
     @Override
     public void attack(Monster mq){
         if(this.sidekick!=null){
+            int c=1;
+            if(this.sidekick.min_list!=null){
+                c=4;
+            }
             if (special_attack && this.count > 0) {
-                if (mq.getHP() - this.getAttack() - 5 - this.sidekick.inc_attack <= 0) {
+                if (mq.getHP() - this.getAttack() - 5 - c*this.sidekick.inc_attack <= 0) {
                     if (mq.type == "Lionfang") {
                         System.out.println("Lionfang is dead. Congratulations you win");
                         return;
@@ -465,6 +551,7 @@ class Warrior extends Hero{
                         this.setXP(this.getXP() + b);
                         this.sidekick.setXP(this.sidekick.getXP()+b/10);
                         this.sidekick.setHP(100);
+                        this.sidekick.min_list=null;
                         System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
                         String buychoice = scan.next();
                         if (buychoice.equals("yes")) {
@@ -472,23 +559,27 @@ class Warrior extends Hero{
                             this.buySidekick(); // Buying finished... Now we start with next location
                             this.setHP(this.HP_acctolevel);
                         } else {
-                            this.changeLevelandIncreasehealth();
+                            this.changeLevelandIncreasehealth(mq);
                         }
                         mq.setHP(mq.HP_acctolevel);
                         //this.g1.printnextPositions(this.getPos() + 1);
                     }
                 } else {
-                    mq.setHP(mq.getHP() - this.getAttack() - 5);
+                    mq.setHP(mq.getHP() - this.getAttack() - 5 - c*this.sidekick.inc_attack);
                     System.out.println("The attack by hero is "+this.getAttack() + 5);
-                    System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                    for(int i=0;i<c;i++){
+                        System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                    }
                     this.count--;
                     this.printHP(mq);
-                    this.sidekick.printHP();
+                    for(int i=0;i<c;i++) {
+                        this.sidekick.printHP();
+                    }
                     this.setMove(this.getMove() + 1);
                     this.enemyAttack(mq);
                 }
             } else {
-                if (mq.getHP() - this.getAttack() -this.sidekick.inc_attack<= 0) {
+                if (mq.getHP() - this.getAttack() -c*this.sidekick.inc_attack<= 0) {
                     if (mq.type == "Lionfang") {
                         System.out.println("Lionfang is dead. Congratulations you win");
                         return;
@@ -501,6 +592,7 @@ class Warrior extends Hero{
                         this.setXP(this.getXP() + b);
                         this.sidekick.setXP(this.sidekick.getXP()+b/10);
                         this.sidekick.setHP(100);
+                        this.sidekick.min_list=null;
                         System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
                         String buychoice = scan.next();
                         if (buychoice.equals("yes")) {
@@ -508,21 +600,25 @@ class Warrior extends Hero{
                             this.buySidekick(); // Buying finished... Now we start with next location
                             this.setHP(this.HP_acctolevel);
                         } else {
-                            this.changeLevelandIncreasehealth();
+                            this.changeLevelandIncreasehealth(mq);
                         }
                         mq.setHP(mq.HP_acctolevel);
                         //this.g1.printnextPositions(this.getPos()+1);
                     }
                 } else {
                     this.special_attack = false;
-                    mq.setHP(mq.getHP() - this.getAttack() - this.sidekick.inc_attack);
+                    mq.setHP(mq.getHP() - this.getAttack() - c*this.sidekick.inc_attack);
                     System.out.println("The attack by hero is "+this.getAttack());
-                    System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                    for(int i=0;i<c;i++) {
+                        System.out.println("The attack by sidekick is " + this.sidekick.inc_attack);
+                    }
                     //System.out.println("Special Power Deactivated");
                     this.count = 3;
                     //System.out.println(mq.getHP());
                     this.printHP(mq);
-                    this.sidekick.printHP();
+                    for(int i=0;i<c;i++) {
+                        this.sidekick.printHP();
+                    }
                     this.setMove(this.getMove() + 1);
                     this.enemyAttack(mq);
                 }
@@ -546,7 +642,7 @@ class Warrior extends Hero{
                             this.buySidekick(); // Buying finished... Now we start with next location
                             this.setHP(this.HP_acctolevel);
                         } else {
-                            this.changeLevelandIncreasehealth();
+                            this.changeLevelandIncreasehealth(mq);
                         }
                         mq.setHP(mq.HP_acctolevel);
                         //this.g1.printnextPositions(this.getPos() + 1);
@@ -578,7 +674,7 @@ class Warrior extends Hero{
                             this.buySidekick(); // Buying finished... Now we start with next location
                             this.setHP(this.HP_acctolevel);
                         } else {
-                            this.changeLevelandIncreasehealth();
+                            this.changeLevelandIncreasehealth(mq);
                         }
                         mq.setHP(mq.HP_acctolevel);
                         //this.g1.printnextPositions(this.getPos()+1);
@@ -656,55 +752,6 @@ class Magi extends Hero {
         this.count =3;
     }
 
-
-    //@Override
-//    public void attack(Monster mq){
-//        System.out.println(this.count);
-//        System.out.println(this.getMove());
-//        if(special_attack && this.count>0) {
-//            mq.setHP((float) (mq.getHP() * 0.95));
-//            this.count--;
-//        }
-//
-//
-//
-//
-//        else{
-//            if(mq.getHP()-this.getAttack()<=0){
-//                if (mq.type == "Lionfang") {
-//                    System.out.println("Lionfang is dead. Congratulations you win");
-//                    return;
-//                }
-//                else{
-//                    System.out.println("Monster dead");
-//                    this.setXP(this.getXP() + mq.getLevel() * 20);
-//                    this.changeLevelandIncreasehealth();
-//                    mq.setHP(mq.HP_acctolevel);
-//                    //this.g1.printnextPositions(this.getPos()+1);
-//                }
-//            }
-//            else {
-//                this.special_attack = false;
-//                mq.setHP(mq.getHP() - this.getAttack());
-//                System.out.println("The attack by hero is");
-//                System.out.println(this.getAttack());
-//                //System.out.println("Special Power Deactivated");
-//                this.count = 3;
-//                System.out.println(mq.getHP());
-//                this.setMove(this.getMove()+1);
-//                this.enemyAttack(mq);
-//            }
-//        }
-//
-//        //System.out.println(mq.getLevel());
-//    }
-
-
-
-
-
-
-
     @Override
     public void attack(Monster mq) {
         if (special_attack && this.count > 0) {
@@ -712,7 +759,11 @@ class Magi extends Hero {
             this.count--;
         }
         if(this.sidekick!=null){
-            if (mq.getHP() <= this.getAttack()+this.sidekick.inc_attack) {
+            int c=1;
+            if(this.sidekick.min_list!=null){
+                c=4;
+            }
+            if (mq.getHP() <= this.getAttack()+c*this.sidekick.inc_attack) {
                 if (mq.type == "Lionfang") {
                     System.out.println("Lionfang is dead. Congratulations you win");
                     return;
@@ -725,6 +776,7 @@ class Magi extends Hero {
                     this.setXP(this.getXP() +b);
                     this.sidekick.setXP(this.sidekick.getXP()+b/10);
                     this.sidekick.setHP(100);
+                    this.sidekick.min_list=null;
                     System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
                     String buychoice = scan.next();
                     if (buychoice.equals("yes")) {
@@ -732,17 +784,21 @@ class Magi extends Hero {
                         this.buySidekick(); // Buying finished... Now we start with next location
                         this.setHP(this.HP_acctolevel);
                     } else {
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
                 }
             } else {
-                mq.setHP(mq.getHP() - this.getAttack() - this.sidekick.inc_attack);
+                mq.setHP(mq.getHP() - this.getAttack() - c*this.sidekick.inc_attack);
                 System.out.println("The attack inflicted by you on the monster is " + this.getAttack());
-                System.out.println("The attack by sidekick is " + this.sidekick.inc_attack);
+                for(int i=0;i<c;i++) {
+                    System.out.println("The attack by sidekick is " + this.sidekick.inc_attack);
+                }
                 this.printHP(mq);
-                this.sidekick.printHP();
+                for(int i=0;i<c;i++){
+                    this.sidekick.printHP();
+                }
                 this.setMove(this.getMove() + 1);
                 this.enemyAttack(mq);
             }
@@ -765,7 +821,7 @@ class Magi extends Hero {
                         this.buySidekick(); // Buying finished... Now we start with next location
                         this.setHP(this.HP_acctolevel);
                     } else {
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
@@ -823,9 +879,14 @@ class Thief extends Hero{
 
     @Override
     public void attack(Monster mq) {
+       // int c=1;
         if (this.sidekick != null) {
-            if (mq.getHP() - this.getAttack() - this.sidekick.inc_attack <= 0) {
-                if (mq.type == "Lionfang") {
+            int c=1;
+            if(this.sidekick.min_list!=null){
+                c=4;
+            }
+            if (mq.getHP() - this.getAttack() - c*this.sidekick.inc_attack <= 0) {
+                if (mq.type.equals("Lionfang")) {
                     System.out.println("Lionfang is dead. Congratulations you win");
                     return;
                 } else {
@@ -837,6 +898,7 @@ class Thief extends Hero{
                     this.setXP(this.getXP()+b);
                     this.sidekick.setXP(this.sidekick.getXP()+b/10);
                     this.sidekick.setHP(100);
+                    this.sidekick.min_list=null;
                     System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
                     String buychoice = scan.next();
                     if (buychoice.equals("yes")) {
@@ -844,19 +906,24 @@ class Thief extends Hero{
                         this.buySidekick(); // Buying finished... Now we start with next location
                         this.setHP(this.HP_acctolevel);
                     } else {
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
                 }
             }
              else {
-                mq.setHP(mq.getHP() - this.getAttack() - this.sidekick.inc_attack);
+                mq.setHP(mq.getHP() - this.getAttack() - c*this.sidekick.inc_attack);
                 System.out.println("The attack by hero is "+this.getAttack());
-                System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                for(int i=0;i<c;i++){
+                    System.out.println("The attack by sidekick is "+this.sidekick.inc_attack);
+                }
+
                 //System.out.println(mq.getHP());
                 this.printHP(mq);
-                this.sidekick.printHP();
+                for(int i=0;i<c;i++) {
+                    this.sidekick.printHP();
+                }
                 this.setMove(this.getMove() + 1);
                 this.enemyAttack(mq);
             }
@@ -880,7 +947,7 @@ class Thief extends Hero{
                         this.buySidekick(); // Buying finished... Now we start with next location
                         this.setHP(this.HP_acctolevel);
                     } else {
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
@@ -935,7 +1002,7 @@ class Thief extends Hero{
                     this.setHP(this.HP_acctolevel);
                 }
                 else{
-                    this.changeLevelandIncreasehealth();
+                    this.changeLevelandIncreasehealth(mq);
                 }
                 mq.setHP(mq.HP_acctolevel);
                 //this.g1.printnextPositions(this.getPos()+1);
@@ -973,7 +1040,11 @@ class Healer extends Hero{
             this.count--;
         }
         if (this.sidekick != null) {
-            if(mq.getHP()<=this.getAttack()+this.sidekick.inc_attack){
+            int c=1;
+            if(this.sidekick.min_list!=null){
+                c=4;
+            }
+            if(mq.getHP()<=this.getAttack()+c*this.sidekick.inc_attack){
                 if (mq.type == "Lionfang") {
                     System.out.println("Lionfang is dead. Congratulations you win");
                     return;
@@ -986,6 +1057,7 @@ class Healer extends Hero{
                     this.setXP(this.getXP()+b);
                     this.sidekick.setXP(this.sidekick.getXP()+b/10);
                     this.sidekick.setHP(100);
+                    this.sidekick.min_list=null;
                     System.out.println("If you would you like to buy a sidekick, type yes. Else type no to upgrade level.");
                     String buychoice = scan.next();
                     if(buychoice.equals("yes")){
@@ -994,18 +1066,22 @@ class Healer extends Hero{
                         this.setHP(this.HP_acctolevel);
                     }
                     else{
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
                 }
             }
             else {
-                mq.setHP(mq.getHP() - this.getAttack() - this.sidekick.inc_attack);
+                mq.setHP(mq.getHP() - this.getAttack() - c*this.sidekick.inc_attack);
                 System.out.println("The attack inflicted by you on the monster is " + this.getAttack());
-                System.out.println("The attack by the sidekick to the monster is "+this.sidekick.inc_attack);
+                for(int i=0;i<c;i++) {
+                    System.out.println("The attack by the sidekick to the monster is " + this.sidekick.inc_attack);
+                }
                 this.printHP(mq);
-                this.sidekick.printHP();
+                for(int i=0;i<c;i++) {
+                    this.sidekick.printHP();
+                }
                 this.setMove(this.getMove() + 1);
                 this.enemyAttack(mq);
             }
@@ -1028,7 +1104,7 @@ class Healer extends Hero{
                         this.buySidekick(); // Buying finished... Now we start with next location
                         this.setHP(this.HP_acctolevel);
                     } else {
-                        this.changeLevelandIncreasehealth();
+                        this.changeLevelandIncreasehealth(mq);
                     }
                     mq.setHP(mq.HP_acctolevel);
                     //this.g1.printnextPositions(this.getPos()+1);
@@ -1074,11 +1150,30 @@ class Healer extends Hero{
 
 
 class Sidekick extends Hero{
+    Hero sid_hero;
     String type;
+    ArrayList<Sidekick> min_list;
     protected float inc_attack;
     @Override
     public void attack(Monster mq){
         mq.setHP(mq.getHP()-this.inc_attack);
+    }
+
+    public void doclone() throws CloneNotSupportedException {
+        Minion m2= (Minion) this.clone();
+        Minion m3= (Minion) this.clone();
+        Minion m4= (Minion) this.clone();
+        this.min_list.add(m2);this.min_list.add(m3);this.min_list.add(m4);
+        this.sid_hero.flag_clone=1;
+    }
+
+//    public Minion clone() throws CloneNotSupportedException {
+//        return (Minion) super.clone();
+//    }
+
+    public Object clone() throws CloneNotSupportedException {
+        Minion m = (Minion)super.clone();
+        return m;
     }
 
     public void printHP(){
@@ -1087,19 +1182,33 @@ class Sidekick extends Hero{
 
 }
 
-class Minion extends Sidekick{
+class Minion extends Sidekick implements Cloneable{
     //final String type;
     public Minion(Hero h1,int x){
         this.inc_attack =(this.getXP()%5)+1+(float)((x-5)*0.5);
         this.setHP(100);
         this.setXP(0);
         this.type="Minion";
+        this.sid_hero=h1;
+        this.min_list=new ArrayList<Sidekick>();
+    }
+@Override
+    public void doclone() throws CloneNotSupportedException {
+        Minion m2= (Minion) this.clone();
+        Minion m3= (Minion) this.clone();
+        Minion m4= (Minion) this.clone();
+        this.min_list.add(m2);this.min_list.add(m3);this.min_list.add(m4);
+        this.sid_hero.flag_clone=1;
     }
 
-    public void doclone(){
+//    public Minion clone() throws CloneNotSupportedException {
+//        return (Minion) super.clone();
+//    }
 
+    public Object clone() throws CloneNotSupportedException {
+        Minion m = (Minion)super.clone();
+        return m;
     }
-
 
 
 }
@@ -1333,7 +1442,7 @@ public class Assignment3{
     public static ArrayList<Player> playerlist;
     //hero_map= new HashMap<String,Hero>();
 
-    static void openingMenu(){
+    static void openingMenu() throws CloneNotSupportedException {
         Scanner scan = new Scanner(System.in);
         playerlist = new ArrayList<Player>();
         //player_map = new HashMap<String,Player>();
@@ -1438,7 +1547,14 @@ public class Assignment3{
                                 String playside = scan.next();
                                 if (playside.equals("yes")) {
                                     h.sortSidekick();//Choose sidekick according to the xp
-                                    System.out.println("You have a sidekick " + h.sidekick.getClass() + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                    System.out.println("You have a sidekick " + h.sidekick.type + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                    if(h.flag_clone==0 && h.sidekick.type.equals("Minion")){
+                                        System.out.println("Press c to use the cloning feature or f to go directly to fight");
+                                        String clo = scan.next();
+                                        if(clo.equals("c")){
+                                            h.sidekick.doclone();
+                                        }
+                                    }
                                 }
                             }
                             //h.fight(game.monster_list.get(pos),pos);
@@ -1463,7 +1579,14 @@ public class Assignment3{
                                     String playside = scan.next();
                                     if (playside.equals("yes")) {
                                         h.sortSidekick();//Choose sidekick according to the xp
-                                        System.out.println("You have a sidekick " + h.sidekick.getClass() + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                        System.out.println("You have a sidekick " + h.sidekick.type + " Attack of sidekick is " + h.sidekick.inc_attack);
+                                        if(h.flag_clone==0 && h.sidekick.type.equals("Minion")){
+                                            System.out.println("Press c to use the cloning feature or f to go directly to fight");
+                                            String clo = scan.next();
+                                            if(clo.equals("c")){
+                                                h.sidekick.doclone();
+                                            }
+                                        }
                                     }
                                 }
                                 h.fight(game.monster_list.get(game.pos_list.get(pos-1)-1),game.pos_list.get(pos-1));
@@ -1486,7 +1609,7 @@ public class Assignment3{
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CloneNotSupportedException {
 
         openingMenu();
 
