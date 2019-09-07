@@ -3,10 +3,16 @@ import java.lang.*;
 
 class player{
     private final String name;
+    String nam;
 
     player(String name) {
         this.name = name;
+        this.nam=name;
     }
+
+//    String getNam(){
+//        return this.nam;
+//    }
 }
 
 abstract class tile{
@@ -64,8 +70,11 @@ class Exception {
 }
 
 class game{
+    Scanner scan = new Scanner(System.in);
     ArrayList<tile> tile_list;
     protected final int numtiles;
+    protected player p;
+    int roll_counter;
     protected game(int numtiles){
         this.numtiles=numtiles;
         this.tile_list=new ArrayList<tile>();
@@ -78,6 +87,7 @@ class game{
     int white_tile_count , vulture_tile_count , cricket_tile_count , snake_tile_count ,trampoline_tile_count;
 
     protected void trackConstruction(){
+        System.out.println(">>Setting up the race track");
         for(int i=1;i<=this.numtiles;i++){
             float rand_tile = (float) Math.random();
             if(rand_tile<0.4){
@@ -109,6 +119,29 @@ class game{
         }
     }
 
+    void infoandtakedetails(){ //Print the details
+        System.out.println(">>Danger : There are "+this.snake_tile_count+" , "+this.cricket_tile_count+" , "+this.vulture_tile_count+" number of snakes , cricket and vultures respectively");
+        System.out.println(">>Danger: Each snake , cricket and vulture can throw you back by "+this.snake_move+" , "+this.cricket_move+" , "+this.vulture_move+" number");
+        System.out.println(">>Good news : There are "+this.trampoline_tile_count+" number of trampolines in your track ");
+        System.out.println(">>Good news : Each trampoline can help you advance by "+this.trampoline_move+" number of tiles");
+        System.out.println("Enter the player name");
+        String u_name=scan.next();
+        this.p = new player(u_name);
+        System.out.println(">>Starting the game with "+this.p.nam+" at Tile 1");
+        System.out.println(">>Control Transferred to computer for rolling the dice for "+this.p.nam);
+        System.out.println(">>Hit enter to start the game");
+        String a=scan.next();
+        System.out.println("Game started=============>");
+           }
+
+           void setup(){ // This is the place where everything will take place
+        this.trackConstruction();
+        this.infoandtakedetails();
+
+           }
+
+
+
 
 
 }
@@ -119,5 +152,7 @@ public class ass5 {
         Scanner scan = new Scanner(System.in);
         System.out.println(">>Enter the number of tiles(in the racing track)");
         int numtile = scan.nextInt();
+        game g = new game(numtile);
+        g.setup();
     }
 }
