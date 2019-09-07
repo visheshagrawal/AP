@@ -24,10 +24,10 @@ abstract class tile{
         this.number = number;
     }
 
-    abstract protected void shake();
+    abstract protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException;
 }
 
-class white_tile extends tile{
+class white_tile extends tile {
 
     protected white_tile(int number,int move) {
         super(number);
@@ -35,13 +35,13 @@ class white_tile extends tile{
     }
 
     @Override
-    protected void shake() {
+    protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException{
         System.out.println(">>Trying to shake tile "+this.number);
         System.out.println(">>I am a white tile");
     }
 }
 
-class vulture_tile extends tile{
+class vulture_tile extends tile {
     int absmove;
     protected vulture_tile(int number,int move) {
         super(number);
@@ -50,7 +50,7 @@ class vulture_tile extends tile{
     }
 
     @Override
-    protected void shake() {
+    protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException{
         System.out.println(">>Trying to shake tile "+this.number);
         System.out.println("Yapping.... I am a vulture , you go back "+this.absmove+" tiles");
     }
@@ -65,7 +65,7 @@ int absmove;
     }
 
     @Override
-    protected void shake() {
+    protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException{
         System.out.println(">>Trying to shake tile "+this.number);
         System.out.println("Chirp.... I am a cricket , you go back "+this.absmove+" tiles");
     }
@@ -80,7 +80,7 @@ class snake_tile extends tile{
     }
 
     @Override
-    protected void shake() {
+    protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException {
         System.out.println(">>Trying to shake tile "+this.number);
         System.out.println("Hissss.... I am a snake , you go back "+this.absmove+" tiles");
     }
@@ -94,14 +94,37 @@ class trampoline_tile extends tile{
     }
 
     @Override
-    protected void shake() {
+    protected void shake() throws SnakeBiteException , VultureBiteException , CricketBiteException , TrampolineException{
         System.out.println(">>Trying to shake tile "+this.number);
         System.out.println("Pingpong.... I am a trampoline , you advance "+this.move_spaces+" tiles");
     }
 }
 
-class Exception {
-
+class SnakeBiteException extends Exception {
+    SnakeBiteException (String message){
+        super(message);
+    }
+}
+class CricketBiteException extends Exception {
+    CricketBiteException (String message){
+        super(message);
+    }
+}
+class VultureBiteException extends Exception {
+    VultureBiteException (String message){
+        super(message);
+    }
+}
+class TrampolineException extends Exception {
+    TrampolineException(String message){
+        super(message);
+    }
+}
+class GameWinnerException extends Exception {
+    GameWinnerException (String message){
+        super(message);
+        return;
+    }
 }
 
 class game{
@@ -174,10 +197,10 @@ class game{
         //a=scan.nextLine();
         }
 
-        void rolldice(){
+        void rolldice() throws CricketBiteException, SnakeBiteException, VultureBiteException, TrampolineException , GameWinnerException {
             int diceroll=(int)(Math.random()*6)+1;
             //this.tile_list.get(present_position-1)
-            if(this.present_position==1 ){
+            //if(this.present_position==1 ){
                 if(flagdice){ // Need to make flagdice = true when he reaches 1
                     if(diceroll==6 ){
                         System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , You are out of the cage you get a free roll");
@@ -191,33 +214,35 @@ class game{
                         rolldice();
                     }
                 }
-                else{
-                    int x=this.present_position+diceroll;
-                    if(x>numtiles){
-                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ this.present_position);
-                        this.roll_counter++;
-                        rolldice();
-                    }
-                    else if(x==numtiles){
-                        //WINS THE GAME
-                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
-                        System.out.println("You win");
-                    }
-                    else{
-                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+x);
-                    this.present_position=x;
-                    this.roll_counter++;
-                    rolldice();
-                    }
-                }
+//                else{
+//                    int x=this.present_position+diceroll;
+//                    if(x>numtiles){
+//                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ this.present_position);
+//                        this.roll_counter++;
+//                        rolldice();
+//                    }
+//                    else if(x==numtiles){
+//                        //WINS THE GAME
+//                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
+//                        System.out.println("You win");
+//                    }
+//                    else{
+//                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+x);
+//                    this.present_position=x;
+//                    this.roll_counter++;
+//                    rolldice();
+//                    }
+//                }
 
-            }
+            //}
             else {
                 if(this.present_position+diceroll==numtiles){
                     //WINS GAME
                     int x =this.present_position+diceroll;
                     System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
                     System.out.println("You win");
+                    //throw new GameWinnerException("Heeyyy you won");
+                    return;
                 }
                 else if(this.present_position+diceroll>numtiles){
                     System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ this.present_position);
@@ -241,7 +266,10 @@ class game{
                     }
                     else if(this.present_position+this.tile_list.get(this.present_position-1).move_spaces==numtiles){
                             //WINS THE  GAME
+                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
                         System.out.println("You win");
+                        //throw new GameWinnerException("Heeyyy you won");
+                        return;
                     }
                     else{
                         this.present_position+=this.tile_list.get(this.present_position-1).move_spaces;
@@ -255,7 +283,7 @@ class game{
         }
 
 
-           void setup(){ // This is the place where everything will take place
+           void setup() throws CricketBiteException, SnakeBiteException, VultureBiteException, TrampolineException , GameWinnerException { // This is the place where everything will take place
         this.trackConstruction();
         this.infoandtakedetails();
         this.present_position=1;
@@ -270,7 +298,7 @@ class game{
 
 public class ass5 {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws CricketBiteException, SnakeBiteException, VultureBiteException, TrampolineException , GameWinnerException {
         Scanner scan = new Scanner(System.in);
         System.out.println(">>Enter the number of tiles(in the racing track)");
         int numtile = scan.nextInt();
