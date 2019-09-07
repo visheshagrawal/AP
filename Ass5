@@ -23,6 +23,8 @@ abstract class tile{
     protected tile(int number) {
         this.number = number;
     }
+
+    abstract protected void shake();
 }
 
 class white_tile extends tile{
@@ -31,29 +33,56 @@ class white_tile extends tile{
         super(number);
         this.move_spaces=0;
     }
+
+    @Override
+    protected void shake() {
+        System.out.println(">>Trying to shake tile "+this.number);
+        System.out.println(">>I am a white tile");
+    }
 }
 
 class vulture_tile extends tile{
-
+    int absmove;
     protected vulture_tile(int number,int move) {
         super(number);
         this.move_spaces=-move;
+        this.absmove=move;
+    }
+
+    @Override
+    protected void shake() {
+        System.out.println(">>Trying to shake tile "+this.number);
+        System.out.println("Yapping.... I am a vulture , you go back "+this.absmove+" tiles");
     }
 }
 
 class cricket_tile extends tile{
-
+int absmove;
     protected cricket_tile(int number,int move) {
         super(number);
         this.move_spaces=-move;
+        this.absmove=move;
+    }
+
+    @Override
+    protected void shake() {
+        System.out.println(">>Trying to shake tile "+this.number);
+        System.out.println("Chirp.... I am a cricket , you go back "+this.absmove+" tiles");
     }
 }
 
 class snake_tile extends tile{
-
+    int absmove;
     protected snake_tile(int number,int move) {
         super(number);
         this.move_spaces=-move;
+        this.absmove=move;
+    }
+
+    @Override
+    protected void shake() {
+        System.out.println(">>Trying to shake tile "+this.number);
+        System.out.println("Hissss.... I am a snake , you go back "+this.absmove+" tiles");
     }
 }
 
@@ -62,6 +91,12 @@ class trampoline_tile extends tile{
     protected trampoline_tile(int number,int move) {
         super(number);
         this.move_spaces=move;
+    }
+
+    @Override
+    protected void shake() {
+        System.out.println(">>Trying to shake tile "+this.number);
+        System.out.println("Pingpong.... I am a trampoline , you advance "+this.move_spaces+" tiles");
     }
 }
 
@@ -74,15 +109,17 @@ class game{
     ArrayList<tile> tile_list;
     protected final int numtiles;
     protected player p;
-    int roll_counter;
+    int roll_counter=1;
+    int present_position;
+    boolean flagdice=true;
     protected game(int numtiles){
         this.numtiles=numtiles;
         this.tile_list=new ArrayList<tile>();
     }
-    int vulture_move = (int)(Math.random()*10);
-    int cricket_move = (int)(Math.random()*10);
-    int snake_move = (int)(Math.random()*10);
-    int trampoline_move = (int)(Math.random()*10);
+    int vulture_move = (int)(Math.random()*10)+1;
+    int cricket_move = (int)(Math.random()*10)+1;
+    int snake_move = (int)(Math.random()*10)+1;
+    int trampoline_move = (int)(Math.random()*10)+1;
 
     int white_tile_count , vulture_tile_count , cricket_tile_count , snake_tile_count ,trampoline_tile_count;
 
@@ -90,12 +127,12 @@ class game{
         System.out.println(">>Setting up the race track");
         for(int i=1;i<=this.numtiles;i++){
             float rand_tile = (float) Math.random();
-            if(rand_tile<0.4){
+            if(rand_tile<0.5){
                 white_tile w = new white_tile(i,0);
                 this.tile_list.add(w);
                 white_tile_count++;
             }
-            else if(rand_tile<0.55){
+            else if(rand_tile<0.6){
                 vulture_tile v = new vulture_tile(i,vulture_move);
                 this.tile_list.add(v);
                 vulture_tile_count++;
@@ -106,7 +143,7 @@ class game{
                 cricket_tile_count++;
 
             }
-            else if(rand_tile<0.85){
+            else if(rand_tile<0.8){
                 snake_tile s = new snake_tile(i,snake_move);
                 this.tile_list.add(s);
                 snake_tile_count++;
@@ -121,7 +158,7 @@ class game{
 
     void infoandtakedetails(){ //Print the details
         System.out.println(">>Danger : There are "+this.snake_tile_count+" , "+this.cricket_tile_count+" , "+this.vulture_tile_count+" number of snakes , cricket and vultures respectively");
-        System.out.println(">>Danger: Each snake , cricket and vulture can throw you back by "+this.snake_move+" , "+this.cricket_move+" , "+this.vulture_move+" number");
+        System.out.println(">>Danger: Each snake , cricket and vulture can throw you back by "+this.snake_move+" , "+this.cricket_move+" , "+this.vulture_move+" number of tiles");
         System.out.println(">>Good news : There are "+this.trampoline_tile_count+" number of trampolines in your track ");
         System.out.println(">>Good news : Each trampoline can help you advance by "+this.trampoline_move+" number of tiles");
         System.out.println("Enter the player name");
@@ -129,15 +166,100 @@ class game{
         this.p = new player(u_name);
         System.out.println(">>Starting the game with "+this.p.nam+" at Tile 1");
         System.out.println(">>Control Transferred to computer for rolling the dice for "+this.p.nam);
-        System.out.println(">>Hit enter to start the game");
+        System.out.println(">>Hit s and press enter to start the game");
         String a=scan.next();
-        System.out.println("Game started=============>");
-           }
+        if(a.equals("s")) {
+            System.out.println("Game started=============>");
+        }
+        //a=scan.nextLine();
+        }
+
+        void rolldice(){
+            int diceroll=(int)(Math.random()*6)+1;
+            //this.tile_list.get(present_position-1)
+            if(this.present_position==1 ){
+                if(flagdice){ // Need to make flagdice = true when he reaches 1
+                    if(diceroll==6 ){
+                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , You are out of the cage you get a free roll");
+                        this.roll_counter++;
+                        flagdice=false;
+                        rolldice();
+                    }
+                    else{
+                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , OOps you need 6 to start");
+                        this.roll_counter++;
+                        rolldice();
+                    }
+                }
+                else{
+                    int x=this.present_position+diceroll;
+                    if(x>numtiles){
+                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ this.present_position);
+                        this.roll_counter++;
+                        rolldice();
+                    }
+                    else if(x==numtiles){
+                        //WINS THE GAME
+                        System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
+                        System.out.println("You win");
+                    }
+                    else{
+                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+x);
+                    this.present_position=x;
+                    this.roll_counter++;
+                    rolldice();
+                    }
+                }
+
+            }
+            else {
+                if(this.present_position+diceroll==numtiles){
+                    //WINS GAME
+                    int x =this.present_position+diceroll;
+                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ x);
+                    System.out.println("You win");
+                }
+                else if(this.present_position+diceroll>numtiles){
+                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+ this.present_position);
+                    this.roll_counter++;
+                    rolldice();
+                }
+                else {
+                    //this.present_position+=diceroll;
+                    int x=this.present_position+diceroll;
+                    System.out.println(">>[Roll " + this.roll_counter + "]: " + this.p.nam + " rolled " + diceroll + " on tile " + this.present_position + " , landed on tile "+x);
+                    this.present_position+=diceroll;
+                    this.tile_list.get(this.present_position-1).shake();
+                    if(this.present_position+this.tile_list.get(this.present_position-1).move_spaces<=1){
+                        this.present_position=1;
+                        System.out.println(this.p.nam+" moved to tile 1");
+                        flagdice=true;
+                        rolldice();
+                    }
+                    else if(this.present_position+this.tile_list.get(this.present_position-1).move_spaces>numtiles){
+                        System.out.println(this.p.nam+" can't advance further , you are at tile "+this.present_position);
+                    }
+                    else if(this.present_position+this.tile_list.get(this.present_position-1).move_spaces==numtiles){
+                            //WINS THE  GAME
+                        System.out.println("You win");
+                    }
+                    else{
+                        this.present_position+=this.tile_list.get(this.present_position-1).move_spaces;
+                        System.out.println(this.p.nam+" moved to tile "+this.present_position);
+                    }
+                    this.roll_counter++;
+                    rolldice();
+                }
+            }
+
+        }
+
 
            void setup(){ // This is the place where everything will take place
         this.trackConstruction();
         this.infoandtakedetails();
-
+        this.present_position=1;
+        this.rolldice();
            }
 
 
