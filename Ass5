@@ -1,0 +1,123 @@
+import java.util.*;
+import java.lang.*;
+
+class player{
+    private final String name;
+
+    player(String name) {
+        this.name = name;
+    }
+}
+
+abstract class tile{
+    protected final int number;
+    protected int move_spaces;
+    //tile next;
+
+    protected tile(int number) {
+        this.number = number;
+    }
+}
+
+class white_tile extends tile{
+
+    protected white_tile(int number,int move) {
+        super(number);
+        this.move_spaces=0;
+    }
+}
+
+class vulture_tile extends tile{
+
+    protected vulture_tile(int number,int move) {
+        super(number);
+        this.move_spaces=-move;
+    }
+}
+
+class cricket_tile extends tile{
+
+    protected cricket_tile(int number,int move) {
+        super(number);
+        this.move_spaces=-move;
+    }
+}
+
+class snake_tile extends tile{
+
+    protected snake_tile(int number,int move) {
+        super(number);
+        this.move_spaces=-move;
+    }
+}
+
+class trampoline_tile extends tile{
+
+    protected trampoline_tile(int number,int move) {
+        super(number);
+        this.move_spaces=move;
+    }
+}
+
+class Exception {
+
+}
+
+class game{
+    ArrayList<tile> tile_list;
+    protected final int numtiles;
+    protected game(int numtiles){
+        this.numtiles=numtiles;
+        this.tile_list=new ArrayList<tile>();
+    }
+    int vulture_move = (int)(Math.random()*10);
+    int cricket_move = (int)(Math.random()*10);
+    int snake_move = (int)(Math.random()*10);
+    int trampoline_move = (int)(Math.random()*10);
+
+    int white_tile_count , vulture_tile_count , cricket_tile_count , snake_tile_count ,trampoline_tile_count;
+
+    protected void trackConstruction(){
+        for(int i=1;i<=this.numtiles;i++){
+            float rand_tile = (float) Math.random();
+            if(rand_tile<0.4){
+                white_tile w = new white_tile(i,0);
+                this.tile_list.add(w);
+                white_tile_count++;
+            }
+            else if(rand_tile<0.55){
+                vulture_tile v = new vulture_tile(i,vulture_move);
+                this.tile_list.add(v);
+                vulture_tile_count++;
+            }
+            else if(rand_tile<0.7){
+                cricket_tile c = new cricket_tile(i,cricket_move);
+                this.tile_list.add(c);
+                cricket_tile_count++;
+
+            }
+            else if(rand_tile<0.85){
+                snake_tile s = new snake_tile(i,snake_move);
+                this.tile_list.add(s);
+                snake_tile_count++;
+            }
+            else{
+                trampoline_tile t = new trampoline_tile(i,trampoline_move);
+                this.tile_list.add(t);
+                trampoline_tile_count++;
+            }
+        }
+    }
+
+
+
+}
+
+public class ass5 {
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println(">>Enter the number of tiles(in the racing track)");
+        int numtile = scan.nextInt();
+    }
+}
