@@ -1,0 +1,607 @@
+package Main;
+
+import javafx.animation.TranslateTransition;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import java.io.FileNotFoundException;
+import java.io.Serializable;
+import java.util.ArrayList;
+
+
+public class GameController extends Clickable {
+    public boolean shootDone = false;
+    public ImageView peaShooterSelector;
+    public GridPane grid_pane;
+    public ImageView zombieGIF;
+    public ImageView mowerGIF;
+    public static Scene gameScene;
+    public ImageView sunGIF;
+    public ImageView pea_image;
+    public void pause(MouseEvent mouseEvent){
+        try{
+            System.out.println("PAUSE GAME");
+            ImageView imageView = (ImageView) mouseEvent.getSource();
+            Scene scene = imageView.getScene();
+            gameScene = scene;
+            Stage primaryStage = (Stage) scene.getWindow();
+            primaryStage.setScene(new Scene(FXMLLoader.load(getClass().getResource("pauseMenu.fxml"))));
+            primaryStage.setFullScreenExitHint("");
+            primaryStage.setFullScreen(true);
+            primaryStage.show();
+        }
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+    }
+
+    @Override
+    public void glowMe(MouseEvent mouseEvent) {
+        super.glowMe(mouseEvent);
+    }
+
+    @Override
+    public void unGlowMe(MouseEvent mouseEvent) {
+        super.unGlowMe(mouseEvent);
+    }
+    public void onDragDetected(MouseEvent mouseEvent){
+        try {
+            Dragboard db = peaShooterSelector.startDragAndDrop(TransferMode.ANY);
+            ClipboardContent cb = new ClipboardContent();
+            cb.putImage(new Image("file:E:/Programming/pl_vs_z/src/images/pea_shooter.gif"));
+            db.setContent(cb);
+            mouseEvent.consume();
+//            System.out.println(peaShooterSelector);
+        }
+        catch(NullPointerException e){
+            System.out.println("Error !");
+        }
+
+    }
+    public void onDragOver(DragEvent dragEvent) throws FileNotFoundException {
+//        for (int i = 0; i < 5; i++){
+//            for(int j = 0; j < 9; j++)
+//                grid_pane.add(new ImageView(), i, j);
+//        }//        System.out.println("Dragging over");
+//        grid_pane.add(new ImageView(), 0, 0);
+        if(dragEvent.getDragboard().hasImage()){
+            dragEvent.acceptTransferModes(TransferMode.ANY);
+            ImageView imgView = new ImageView();
+//            Image img = dragEvent.getDragboard().getImage();
+//            imgView.setImage(new Image("file:E:/Programming/pl_vs_z/src/PvZpics/Peashooter_transparent_gif.gif"));
+//            grid_pane.add(imgView, 0, 0);
+        }
+    }
+    public void onDragDropped(DragEvent event) throws FileNotFoundException {
+        try{
+            Image image = new Image("file:E:/Programming/pl_vs_z/src/PvZpics/Peashooter_transparent_gif_new.gif");
+            ImageView imgview = new ImageView();
+            imgview.setImage(image);
+//            System.out.println(event == null);
+            Node node= event.getPickResult().getIntersectedNode();
+            //            System.out.println("r");
+//            System.out.println(node == null);
+            int index_x=GridPane.getColumnIndex(node);
+//            System.out.println(GridPane.getColumnIndex(node) == null);
+            int index_y=GridPane.getRowIndex(node);
+//            System.out.println(index_x);
+//            System.out.println(index_y) ;
+            grid_pane.add(imgview,index_x,index_y);
+            if (index_y == 2){
+                moveZombie();
+            }
+        }
+        catch (NullPointerException e){
+            System.out.println("Error");
+            System.out.println(e.getMessage());
+        }
+
+//        grid_pane.add(imgView, 0, 0);
+    }
+    public void moveZombie(){
+        TranslateTransition transition = new TranslateTransition();
+        transition.setDuration(Duration.seconds(20));
+        transition.setNode(zombieGIF);
+        transition.setToX(-550);
+        transition.setCycleCount(TranslateTransition.INDEFINITE);
+        transition.play();
+
+    }
+    public void onDragDone(){
+
+    }
+    public void moveLawnmower(){
+        TranslateTransition transition = new TranslateTransition();
+        transition.setDuration(Duration.seconds(2));
+        transition.setNode(mowerGIF);
+        transition.setToX(1100);
+        transition.play();
+        transition.setOnFinished((e)->{
+            mowerGIF.setVisible(false);
+        });
+    }
+    public void moveSun(){
+        TranslateTransition transition = new TranslateTransition();
+        transition.setDuration(Duration.seconds(2));
+        transition.setNode(sunGIF);
+        transition.setToY(500);
+        transition.play();
+        transition.setOnFinished((e)->{
+            sunGIF.setVisible(false);
+        });
+    }
+
+    public void peaMove(){
+        if(shootDone) return;
+        System.out.println("shooting");
+        pea_image.setVisible(true);
+        TranslateTransition transition = new TranslateTransition();
+        transition.setDuration(Duration.seconds(2));
+        transition.setNode(pea_image);
+        transition.setToX(850);
+        transition.play();
+        transition.setOnFinished((e)->{
+            pea_image.setVisible(false);
+            shootDone = true;
+        });
+    }
+
+//    public void peaAnimation() throws FileNotFoundException {
+//        //Move in X axis by +200
+//        transition.setByX(200);
+//        //Move in Y axis by +100
+//        transition.setByY(100);
+//        //Go back to previous position after 2.5 seconds
+//        transition.setAutoReverse(true);
+//        //Repeat animation twice
+//        transition.setCycleCount(2);
+//        transition.play();
+//        Main.primStage.setScene(newProfileController.gameScene);
+//        Main.primStage.show();
+//    }
+
+    class Game{
+        private int level;
+        private int rows;
+        private int cols;
+        public Block[][] lawn;
+        public Lawnmower[] lawnmowerList;
+        public ArrayList<Zombie> zombieList;
+
+        public Game(int level){
+            this.level=level;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public int getRows() {
+            return rows;
+        }
+
+        public void setRows(int rows) {
+            this.rows = rows;
+        }
+
+        public int getCols() {
+            return cols;
+        }
+
+        public void setCols(int cols) {
+            this.cols = cols;
+        }
+        public void save(){
+
+        }
+        public void start(){
+
+        }
+    }
+
+    class Pea{
+        private int x;
+        private int y;
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+    }
+
+    class Block{
+        private Plant plant;
+        private Zombie zombie;
+        private Token token;
+
+        public Plant getPlant() {
+            return plant;
+        }
+
+        public void setPlant(Plant plant) {
+            this.plant = plant;
+        }
+
+        public Zombie getZombie() {
+            return zombie;
+        }
+
+        public void setZombie(Zombie zombie) {
+            this.zombie = zombie;
+        }
+
+        public Token getToken() {
+            return token;
+        }
+
+        public void setToken(Token token) {
+            this.token = token;
+        }
+
+        public Block(){}
+
+    }
+
+    class Token{
+        private int x;
+        private int y;
+        private int timer;
+        private int value;
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+
+        public int getTimer() {
+            return timer;
+        }
+
+        public void setTimer(int timer) {
+            this.timer = timer;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+    }
+
+
+    class Character{
+        protected int health;
+        protected int x;
+        protected int y;
+        public int getHealth() {
+            return health;
+        }
+
+        public void setHealth(int health) {
+            this.health = health;
+        }
+
+        public int getX() {
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public int getY() {
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
+        }
+
+    }
+
+    class Lawnmower extends Character {
+        public Lawnmower(){
+        }
+    }
+    class Plant extends Character{
+        public Plant(){
+
+        }
+
+        protected int timer;
+        protected int cost;
+
+        public int getTimer() {
+            return timer;
+        }
+        public void setTimer(int timer) {
+            this.timer = timer;
+        }
+
+        public int getCost() {
+            return cost;
+        }
+
+        public void setCost(int cost) {
+            this.cost = cost;
+        }
+
+        }
+
+        class Shooter extends Plant{
+            protected int attackPoints;
+
+            public Shooter() {
+
+            }
+
+            public int getAttackPoints() {
+                return attackPoints;
+            }
+
+            public void setAttackPoints(int attackPoints) {
+                this.attackPoints = attackPoints;
+            }
+
+            public void attack(){
+
+            }
+        }
+
+        class Peashooter extends Shooter{
+            private Pea pea;
+
+            public Pea getPea() {
+                return pea;
+            }
+
+            public void setPea(Pea pea) {
+                this.pea = pea;
+            }
+
+            public Peashooter(){
+
+            }
+            public void attack(){
+
+            }
+        }
+
+        class Repeater extends Shooter{
+            private Pea pea1;
+            private Pea pea2;
+
+            public Pea getPea1() {
+                return pea1;
+            }
+
+            public void setPea1(Pea pea1) {
+                this.pea1 = pea1;
+            }
+
+            public Pea getPea2() {
+                return pea2;
+            }
+
+            public void setPea2(Pea pea2) {
+                this.pea2 = pea2;
+            }
+
+            public Repeater(){
+            }
+            public void attack(){
+
+            }
+        }
+
+        class Explosive extends Plant{
+            public Explosive(){
+
+            }
+
+            public void burst(){
+
+            }
+        }
+
+        class Cherry extends Explosive{
+            public Cherry(){
+
+            }
+
+            public void burst(){
+
+            }
+
+        }
+
+        class Barrier extends Plant{
+            public Barrier(){
+
+            }
+            public void isBarring(){
+
+            }
+        }
+
+        class Walnut{
+            private int walnutTimer;
+
+            public Walnut(){
+
+            }
+            public int getWalnutTimer() {
+                return walnutTimer;
+            }
+
+            public void setWalnutTimer(int walnutTimer) {
+                this.walnutTimer = walnutTimer;
+            }
+        }
+
+
+        class EnergyGiver extends Plant{
+            protected int tokenValue;
+            protected int tokenTimer;
+            protected boolean is_generated;
+
+            public EnergyGiver(){
+
+            }
+
+            public int getTokenValue() {
+                return tokenValue;
+            }
+
+            public void setTokenValue(int tokenValue) {
+                this.tokenValue = tokenValue;
+            }
+
+            public int getTokenTimer() {
+                return tokenTimer;
+            }
+
+            public void setTokenTimer(int tokenTimer) {
+                this.tokenTimer = tokenTimer;
+            }
+
+            public boolean isIs_generated() {
+                return is_generated;
+            }
+
+            public void setIs_generated(boolean is_generated) {
+                this.is_generated = is_generated;
+            }
+
+            public void generateToken(){
+
+            }
+        }
+
+        class Sunflower{
+         public Sunflower(){}
+
+        }
+
+
+        class Zombie extends Character {
+            protected int attackPoints; // This is the attack that zombie inflicts upon the plants
+            protected int speed;
+
+            public int getAttackPoints() {
+                return attackPoints;
+            }
+
+            public void setAttackPoints(int attackPoints) {
+                this.attackPoints = attackPoints;
+            }
+
+            public int getSpeed() {
+                return speed;
+            }
+
+            public void setSpeed(int speed) {
+                this.speed = speed;
+            }
+
+            public Zombie() {
+
+            }
+
+            public void attack() {
+
+            }
+        }
+
+        class HeadwearZombie extends Zombie{
+            public boolean isHeadwear(){
+
+            }
+        }
+
+        class Bucket extends HeadwearZombie{
+            public Bucket(){
+
+            }
+
+            @Override
+            public boolean isHeadwear() {
+                return super.isHeadwear();
+            }
+        }
+
+        class Conehead extends HeadwearZombie{
+            public Conehead(){
+
+            }
+
+            @Override
+            public boolean isHeadwear() {
+                return super.isHeadwear();
+            }
+        }
+
+        class RunnerZombie extends Zombie{
+            public boolean isRunning(){
+
+            }
+        }
+
+        class Newspaper extends RunnerZombie{
+            public Newspaper(){
+
+            }
+
+            @Override
+            public boolean isRunning() {
+                //return super.isRunning();
+            }
+        }
+
+        class Football extends RunnerZombie{
+            public Football(){
+
+            }
+
+            public boolean isRunning(){
+
+            }
+
+        }
+
+    }
