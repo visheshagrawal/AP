@@ -167,7 +167,7 @@ public class GameController extends Clickable {
 //        Main.primStage.show();
 //    }
 
-    class Game{
+    class Game implements Serializable{
         private int level;
         private int rows;
         private int cols;
@@ -210,7 +210,7 @@ public class GameController extends Clickable {
         }
     }
 
-    class Pea{
+    class Pea implements Cloneable , Serializable {
         private int x;
         private int y;
 
@@ -231,7 +231,7 @@ public class GameController extends Clickable {
         }
     }
 
-    class Block{
+    class Block implements Serializable {
         private Plant plant;
         private Zombie zombie;
         private Token token;
@@ -264,7 +264,7 @@ public class GameController extends Clickable {
 
     }
 
-    class Token{
+    class Token implements Serializable , Cloneable{
         private int x;
         private int y;
         private int timer;
@@ -304,7 +304,7 @@ public class GameController extends Clickable {
     }
 
 
-    class Character{
+    class Character implements Serializable , Cloneable{
         protected int health;
         protected int x;
         protected int y;
@@ -338,10 +338,10 @@ public class GameController extends Clickable {
         public Lawnmower(){
         }
     }
-    class Plant extends Character{
-        public Plant(){
-
-        }
+    abstract class Plant extends Character{
+//        public Plant(){
+//
+//        }
 
         protected int timer;
         protected int cost;
@@ -363,12 +363,12 @@ public class GameController extends Clickable {
 
         }
 
-        class Shooter extends Plant{
+        abstract class Shooter extends Plant{
             protected int attackPoints;
 
-            public Shooter() {
-
-            }
+//            public Shooter() {
+//
+//            }
 
             public int getAttackPoints() {
                 return attackPoints;
@@ -429,7 +429,7 @@ public class GameController extends Clickable {
             }
         }
 
-        class Explosive extends Plant{
+        abstract class Explosive extends Plant{
             public Explosive(){
 
             }
@@ -450,16 +450,13 @@ public class GameController extends Clickable {
 
         }
 
-        class Barrier extends Plant{
-            public Barrier(){
-
-            }
+        abstract class Barrier extends Plant{
             public void isBarring(){
 
             }
         }
 
-        class Walnut{
+        class Walnut extends Barrier{
             private int walnutTimer;
 
             public Walnut(){
@@ -475,14 +472,14 @@ public class GameController extends Clickable {
         }
 
 
-        class EnergyGiver extends Plant{
+        abstract class EnergyGiver extends Plant{
             protected int tokenValue;
             protected int tokenTimer;
             protected boolean is_generated;
 
-            public EnergyGiver(){
-
-            }
+//            public EnergyGiver(){
+//
+//            }
 
             public int getTokenValue() {
                 return tokenValue;
@@ -513,7 +510,7 @@ public class GameController extends Clickable {
             }
         }
 
-        class Sunflower{
+        class Sunflower extends EnergyGiver{
          public Sunflower(){}
 
         }
@@ -550,7 +547,7 @@ public class GameController extends Clickable {
 
         class HeadwearZombie extends Zombie{
             public boolean isHeadwear(){
-
+                return true;
             }
         }
 
@@ -561,7 +558,7 @@ public class GameController extends Clickable {
 
             @Override
             public boolean isHeadwear() {
-                return super.isHeadwear();
+                return true;
             }
         }
 
@@ -572,13 +569,13 @@ public class GameController extends Clickable {
 
             @Override
             public boolean isHeadwear() {
-                return super.isHeadwear();
+                return true;
             }
         }
 
         class RunnerZombie extends Zombie{
             public boolean isRunning(){
-
+                return true;
             }
         }
 
@@ -590,6 +587,7 @@ public class GameController extends Clickable {
             @Override
             public boolean isRunning() {
                 //return super.isRunning();
+                return true;
             }
         }
 
@@ -599,7 +597,7 @@ public class GameController extends Clickable {
             }
 
             public boolean isRunning(){
-
+                return true;
             }
 
         }
